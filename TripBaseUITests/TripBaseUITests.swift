@@ -12,8 +12,8 @@ final class TripBaseUITests: XCTestCase {
 
     @MainActor
     func testCreateTripAndLeg() throws {
-        XCTAssertTrue(app.tabBars.buttons["出張"].waitForExistence(timeout: 8))
-        app.tabBars.buttons["出張"].tap()
+        XCTAssertTrue(app.buttons["tab.itinerary"].waitForExistence(timeout: 8))
+        app.buttons["tab.itinerary"].tap()
         XCTAssertTrue(app.navigationBars["出張一覧"].waitForExistence(timeout: 8))
 
         app.buttons["trip.add"].tap()

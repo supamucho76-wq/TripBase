@@ -90,6 +90,7 @@ struct HomeView: View {
         .padding(20)
         .background(AppTheme.accent.opacity(0.11))
         .clipShape(RoundedRectangle(cornerRadius: 22, style: .continuous))
+        .shadow(color: .black.opacity(0.06), radius: 10, y: 4)
     }
 
     private func nextDestinationCard(_ leg: TripLeg) -> some View {
@@ -108,9 +109,7 @@ struct HomeView: View {
                 .foregroundStyle(.secondary)
         }
         .frame(maxWidth: .infinity, alignment: .leading)
-        .padding(18)
-        .background(.background)
-        .clipShape(RoundedRectangle(cornerRadius: 22, style: .continuous))
+        .cardStyle()
     }
 
     private var upcomingList: some View {
@@ -137,9 +136,7 @@ struct HomeView: View {
                 Divider()
             }
         }
-        .padding(18)
-        .background(.background)
-        .clipShape(RoundedRectangle(cornerRadius: 22, style: .continuous))
+        .cardStyle()
     }
 }
 

@@ -1,14 +1,23 @@
 import SwiftUI
 
 struct RootView: View {
+    @State private var selection: TripBaseTab = .home
+
     var body: some View {
-        TabView {
-            HomeView()
-                .tabItem { Label("ホーム", systemImage: "house") }
-            TripListView()
-                .tabItem { Label("出張", systemImage: "airplane") }
+        Group {
+            switch selection {
+            case .home: HomeView()
+            case .itinerary: TripListView()
+            case .weather: WeatherView()
+            case .forex: ForexView()
+            case .settings: SettingsView()
+            }
         }
-        .tint(AppTheme.accent)
+        .frame(maxWidth: .infinity, maxHeight: .infinity)
+        .safeAreaInset(edge: .bottom, spacing: 0) {
+            FloatingTabBar(selection: $selection)
+        }
+        .background(AppTheme.background.ignoresSafeArea())
     }
 }
 
