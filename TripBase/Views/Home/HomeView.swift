@@ -45,7 +45,7 @@ struct HomeView: View {
                 .padding()
             }
             .background(AppTheme.background)
-            .navigationTitle("出張コンパス")
+            .navigationTitle("出張Base")
         }
     }
 
