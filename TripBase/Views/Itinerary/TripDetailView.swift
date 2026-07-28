@@ -24,22 +24,26 @@ struct TripDetailView: View {
                 )
             } else {
                 List(sortedLegs) { leg in
-                    Button {
-                        legPendingEdit = leg
-                    } label: {
+                    NavigationLink(value: leg) {
                         TripLegRow(leg: leg)
                     }
-                    .buttonStyle(.plain)
                     .swipeActions {
                         Button("削除", role: .destructive) {
                             legPendingDelete = leg
                         }
+                        Button("編集") {
+                            legPendingEdit = leg
+                        }
+                        .tint(AppTheme.accent)
                     }
                 }
             }
         }
         .navigationTitle(trip.name)
         .navigationBarTitleDisplayMode(.inline)
+        .navigationDestination(for: TripLeg.self) { leg in
+            DestinationInfoView(leg: leg)
+        }
         .toolbar {
             ToolbarItem(placement: .primaryAction) {
                 Button {

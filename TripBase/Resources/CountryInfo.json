@@ -1,0 +1,339 @@
+[
+  {
+    "countryCode": "JP",
+    "nameJa": "日本",
+    "nameEn": "Japan",
+    "timeZoneIdentifier": "Asia/Tokyo",
+    "currencyCode": "JPY",
+    "plugTypes": ["A"],
+    "voltage": 100,
+    "frequencyHz": 50,
+    "tippingNote": "国内はチップ不要です。",
+    "packingAddenda": [],
+    "mofaSafetyURL": "https://www.anzen.mofa.go.jp/",
+    "embassy": null
+  },
+  {
+    "countryCode": "US",
+    "nameJa": "アメリカ合衆国",
+    "nameEn": "United States",
+    "timeZoneIdentifier": "America/New_York",
+    "currencyCode": "USD",
+    "plugTypes": ["A", "B"],
+    "voltage": 120,
+    "frequencyHz": 60,
+    "tippingNote": "レストランは15〜20%、タクシーやホテルスタッフにも少額のチップが一般的です。",
+    "packingAddenda": ["現金チップ用の小額紙幣"],
+    "mofaSafetyURL": "https://www.anzen.mofa.go.jp/",
+    "embassy": {
+      "name": "在アメリカ合衆国日本国大使館",
+      "address": "2520 Massachusetts Avenue, N.W., Washington, D.C. 20008",
+      "phone": "+1-202-238-6700",
+      "website": "https://www.us.emb-japan.go.jp/"
+    }
+  },
+  {
+    "countryCode": "CN",
+    "nameJa": "中国",
+    "nameEn": "China",
+    "timeZoneIdentifier": "Asia/Shanghai",
+    "currencyCode": "CNY",
+    "plugTypes": ["A", "C", "I"],
+    "voltage": 220,
+    "frequencyHz": 50,
+    "tippingNote": "チップの習慣は基本的にありません。",
+    "packingAddenda": ["A/Cタイプ変換プラグ", "VPNアプリ（渡航前にインストール）"],
+    "mofaSafetyURL": "https://www.anzen.mofa.go.jp/",
+    "embassy": {
+      "name": "在中国日本国大使館",
+      "address": "北京市朝陽区日壇路7号（郵便番号100600）",
+      "phone": "+86-10-6532-2361",
+      "website": "https://www.cn.emb-japan.go.jp/"
+    }
+  },
+  {
+    "countryCode": "TW",
+    "nameJa": "台湾",
+    "nameEn": "Taiwan",
+    "timeZoneIdentifier": "Asia/Taipei",
+    "currencyCode": "TWD",
+    "plugTypes": ["A", "B"],
+    "voltage": 110,
+    "frequencyHz": 60,
+    "tippingNote": "チップの習慣は基本的にありません。",
+    "packingAddenda": ["変換プラグ不要（日本と同じAタイプ）"],
+    "mofaSafetyURL": "https://www.anzen.mofa.go.jp/",
+    "embassy": {
+      "name": "公益財団法人日本台湾交流協会 台北事務所（大使館に相当）",
+      "address": "台北市慶城街28号 通泰商業大楼",
+      "phone": "+886-2-2713-8000",
+      "website": "https://www.koryu.or.jp/"
+    }
+  },
+  {
+    "countryCode": "KR",
+    "nameJa": "韓国",
+    "nameEn": "South Korea",
+    "timeZoneIdentifier": "Asia/Seoul",
+    "currencyCode": "KRW",
+    "plugTypes": ["C", "F"],
+    "voltage": 220,
+    "frequencyHz": 60,
+    "tippingNote": "チップの習慣は基本的にありません。",
+    "packingAddenda": ["C/Fタイプ変換プラグ"],
+    "mofaSafetyURL": "https://www.anzen.mofa.go.jp/",
+    "embassy": {
+      "name": "在大韓民国日本国大使館",
+      "address": "ソウル特別市鍾路区栗谷路6 ツインツリータワーA棟（〒03142）",
+      "phone": "+82-2-2170-5200",
+      "website": "https://www.kr.emb-japan.go.jp/"
+    }
+  },
+  {
+    "countryCode": "SG",
+    "nameJa": "シンガポール",
+    "nameEn": "Singapore",
+    "timeZoneIdentifier": "Asia/Singapore",
+    "currencyCode": "SGD",
+    "plugTypes": ["G"],
+    "voltage": 230,
+    "frequencyHz": 50,
+    "tippingNote": "サービス料込みが一般的で、追加のチップは不要です。",
+    "packingAddenda": ["Gタイプ変換プラグ", "屋内冷房対策の羽織り物"],
+    "mofaSafetyURL": "https://www.anzen.mofa.go.jp/",
+    "embassy": {
+      "name": "在シンガポール日本国大使館",
+      "address": "16 Nassim Road, Singapore 258390",
+      "phone": "+65-6235-8855",
+      "website": "https://www.sg.emb-japan.go.jp/"
+    }
+  },
+  {
+    "countryCode": "TH",
+    "nameJa": "タイ",
+    "nameEn": "Thailand",
+    "timeZoneIdentifier": "Asia/Bangkok",
+    "currencyCode": "THB",
+    "plugTypes": ["A", "B", "C"],
+    "voltage": 220,
+    "frequencyHz": 50,
+    "tippingNote": "必須ではありませんが、少額のチップが喜ばれます。",
+    "packingAddenda": ["A/Cタイプ変換プラグ", "虫除け"],
+    "mofaSafetyURL": "https://www.anzen.mofa.go.jp/",
+    "embassy": {
+      "name": "在タイ日本国大使館",
+      "address": "177 Witthayu Road, Lumphini, Pathumwan, Bangkok 10330",
+      "phone": "+66-2-207-8500",
+      "website": "https://www.th.emb-japan.go.jp/"
+    }
+  },
+  {
+    "countryCode": "VN",
+    "nameJa": "ベトナム",
+    "nameEn": "Vietnam",
+    "timeZoneIdentifier": "Asia/Ho_Chi_Minh",
+    "currencyCode": "VND",
+    "plugTypes": ["A", "C"],
+    "voltage": 220,
+    "frequencyHz": 50,
+    "tippingNote": "必須ではありませんが、観光地では少額のチップが一般的になりつつあります。",
+    "packingAddenda": ["A/Cタイプ変換プラグ"],
+    "mofaSafetyURL": "https://www.anzen.mofa.go.jp/",
+    "embassy": {
+      "name": "在ベトナム日本国大使館",
+      "address": "27 Liễu Giai, Ba Dinh, Hanoi",
+      "phone": "+84-24-3846-3000",
+      "website": "https://www.vn.emb-japan.go.jp/"
+    }
+  },
+  {
+    "countryCode": "ID",
+    "nameJa": "インドネシア",
+    "nameEn": "Indonesia",
+    "timeZoneIdentifier": "Asia/Jakarta",
+    "currencyCode": "IDR",
+    "plugTypes": ["C", "F"],
+    "voltage": 230,
+    "frequencyHz": 50,
+    "tippingNote": "必須ではありませんが、少額のチップが喜ばれます。",
+    "packingAddenda": ["C/Fタイプ変換プラグ"],
+    "mofaSafetyURL": "https://www.anzen.mofa.go.jp/",
+    "embassy": {
+      "name": "在インドネシア日本国大使館",
+      "address": "Jl. M.H. Thamrin 24, Jakarta Pusat 10350",
+      "phone": "+62-21-3192-4308",
+      "website": "https://www.id.emb-japan.go.jp/"
+    }
+  },
+  {
+    "countryCode": "PH",
+    "nameJa": "フィリピン",
+    "nameEn": "Philippines",
+    "timeZoneIdentifier": "Asia/Manila",
+    "currencyCode": "PHP",
+    "plugTypes": ["A", "B", "C"],
+    "voltage": 220,
+    "frequencyHz": 60,
+    "tippingNote": "レストランではサービス料が別に少額のチップが一般的です。",
+    "packingAddenda": ["Cタイプ変換プラグ（Aタイプはそのまま使える場合あり）"],
+    "mofaSafetyURL": "https://www.anzen.mofa.go.jp/",
+    "embassy": {
+      "name": "在フィリピン日本国大使館",
+      "address": "2627 Roxas Boulevard, Pasay City, Metro Manila 1300",
+      "phone": "+63-2-8834-7508",
+      "website": "https://www.ph.emb-japan.go.jp/"
+    }
+  },
+  {
+    "countryCode": "IN",
+    "nameJa": "インド",
+    "nameEn": "India",
+    "timeZoneIdentifier": "Asia/Kolkata",
+    "currencyCode": "INR",
+    "plugTypes": ["C", "D", "M"],
+    "voltage": 230,
+    "frequencyHz": 50,
+    "tippingNote": "レストランやホテルスタッフに少額のチップが一般的です。",
+    "packingAddenda": ["C/D/Mタイプ変換プラグ", "胃腸薬・常備薬"],
+    "mofaSafetyURL": "https://www.anzen.mofa.go.jp/",
+    "embassy": {
+      "name": "在インド日本国大使館",
+      "address": "Plot No.4&5, 50-G Shantipath, Chanakyapuri, New Delhi 110021",
+      "phone": "+91-11-4610-4610",
+      "website": "https://www.in.emb-japan.go.jp/"
+    }
+  },
+  {
+    "countryCode": "GB",
+    "nameJa": "イギリス",
+    "nameEn": "United Kingdom",
+    "timeZoneIdentifier": "Europe/London",
+    "currencyCode": "GBP",
+    "plugTypes": ["G"],
+    "voltage": 230,
+    "frequencyHz": 50,
+    "tippingNote": "サービス料込みの場合が多く、追加のチップは任意です。",
+    "packingAddenda": ["Gタイプ変換プラグ"],
+    "mofaSafetyURL": "https://www.anzen.mofa.go.jp/",
+    "embassy": {
+      "name": "在英国日本国大使館",
+      "address": "101-104 Piccadilly, London, W1J 7JT",
+      "phone": "+44-20-7465-6500",
+      "website": "https://www.uk.emb-japan.go.jp/"
+    }
+  },
+  {
+    "countryCode": "DE",
+    "nameJa": "ドイツ",
+    "nameEn": "Germany",
+    "timeZoneIdentifier": "Europe/Berlin",
+    "currencyCode": "EUR",
+    "plugTypes": ["C", "F"],
+    "voltage": 230,
+    "frequencyHz": 50,
+    "tippingNote": "会計の端数を切り上げる程度の少額チップが一般的です。",
+    "packingAddenda": ["C/Fタイプ変換プラグ"],
+    "mofaSafetyURL": "https://www.anzen.mofa.go.jp/",
+    "embassy": {
+      "name": "在ドイツ日本国大使館",
+      "address": "Hiroshimastr. 6, 10785 Berlin",
+      "phone": "+49-30-210940",
+      "website": "https://www.de.emb-japan.go.jp/"
+    }
+  },
+  {
+    "countryCode": "FR",
+    "nameJa": "フランス",
+    "nameEn": "France",
+    "timeZoneIdentifier": "Europe/Paris",
+    "currencyCode": "EUR",
+    "plugTypes": ["C", "E"],
+    "voltage": 230,
+    "frequencyHz": 50,
+    "tippingNote": "サービス料込みが多く、追加のチップは基本的に不要です。",
+    "packingAddenda": ["C/Eタイプ変換プラグ", "折りたたみ傘"],
+    "mofaSafetyURL": "https://www.anzen.mofa.go.jp/",
+    "embassy": {
+      "name": "在フランス日本国大使館",
+      "address": "7, avenue Hoche, 75008 Paris",
+      "phone": "+33-1-4888-6200",
+      "website": "https://www.fr.emb-japan.go.jp/"
+    }
+  },
+  {
+    "countryCode": "AU",
+    "nameJa": "オーストラリア",
+    "nameEn": "Australia",
+    "timeZoneIdentifier": "Australia/Sydney",
+    "currencyCode": "AUD",
+    "plugTypes": ["I"],
+    "voltage": 230,
+    "frequencyHz": 50,
+    "tippingNote": "チップの習慣は基本的にありません。",
+    "packingAddenda": ["Iタイプ変換プラグ"],
+    "mofaSafetyURL": "https://www.anzen.mofa.go.jp/",
+    "embassy": {
+      "name": "在オーストラリア日本国大使館",
+      "address": "112 Empire Circuit, Yarralumla ACT 2600",
+      "phone": "+61-2-6273-3244",
+      "website": "https://www.au.emb-japan.go.jp/"
+    }
+  },
+  {
+    "countryCode": "AE",
+    "nameJa": "アラブ首長国連邦",
+    "nameEn": "United Arab Emirates",
+    "timeZoneIdentifier": "Asia/Dubai",
+    "currencyCode": "AED",
+    "plugTypes": ["C", "D", "G"],
+    "voltage": 230,
+    "frequencyHz": 50,
+    "tippingNote": "サービス料込みでも、レストランで10%前後の追加チップが一般的です。",
+    "packingAddenda": ["C/D/Gタイプ変換プラグ", "肌の露出を控えた服装（モスク訪問時）"],
+    "mofaSafetyURL": "https://www.anzen.mofa.go.jp/",
+    "embassy": {
+      "name": "在アラブ首長国連邦日本国大使館",
+      "address": "Abu Dhabi, United Arab Emirates (P.O. Box 2430)",
+      "phone": "+971-2-443-5696",
+      "website": "https://www.uae.emb-japan.go.jp/"
+    }
+  },
+  {
+    "countryCode": "MY",
+    "nameJa": "マレーシア",
+    "nameEn": "Malaysia",
+    "timeZoneIdentifier": "Asia/Kuala_Lumpur",
+    "currencyCode": "MYR",
+    "plugTypes": ["G"],
+    "voltage": 230,
+    "frequencyHz": 50,
+    "tippingNote": "サービス料込みが多く、追加のチップは必須ではありません。",
+    "packingAddenda": ["Gタイプ変換プラグ"],
+    "mofaSafetyURL": "https://www.anzen.mofa.go.jp/",
+    "embassy": {
+      "name": "在マレーシア日本国大使館",
+      "address": "No.11, Persiaran Stonor, Off Jalan Tun Razak, 50450 Kuala Lumpur",
+      "phone": "+60-3-2177-2600",
+      "website": "https://www.my.emb-japan.go.jp/"
+    }
+  },
+  {
+    "countryCode": "HK",
+    "nameJa": "香港",
+    "nameEn": "Hong Kong",
+    "timeZoneIdentifier": "Asia/Hong_Kong",
+    "currencyCode": "HKD",
+    "plugTypes": ["G"],
+    "voltage": 220,
+    "frequencyHz": 50,
+    "tippingNote": "サービス料込みが多く、追加のチップは少額で十分です。",
+    "packingAddenda": ["Gタイプ変換プラグ"],
+    "mofaSafetyURL": "https://www.anzen.mofa.go.jp/",
+    "embassy": {
+      "name": "在香港日本国総領事館",
+      "address": "46-47/F, One Exchange Square, 8 Connaught Place, Central, Hong Kong",
+      "phone": "+852-2522-1184",
+      "website": "https://www.hk.emb-japan.go.jp/"
+    }
+  }
+]
