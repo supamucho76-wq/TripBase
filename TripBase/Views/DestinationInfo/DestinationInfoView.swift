@@ -6,6 +6,7 @@ struct DestinationInfoView: View {
     @State private var holidays: [PublicHoliday] = []
     @State private var holidaysErrorMessage: String?
     @State private var isLoadingHolidays = false
+    @State private var isHolidaysStale = false
 
     private var countryInfo: CountryInfo? {
         CountryInfoStore.lookup(leg.countryCode)
@@ -60,6 +61,11 @@ struct DestinationInfoView: View {
                     }
                     .font(.footnote)
                 }
+                if isHolidaysStale {
+                    Text("オフライン — 前回取得時点の情報")
+                        .font(.caption2)
+                        .foregroundStyle(.secondary)
+                }
             } else if let holidaysErrorMessage {
                 Text(holidaysErrorMessage)
                     .font(.footnote)
@@ -81,10 +87,16 @@ struct DestinationInfoView: View {
     private func loadHolidays() async {
         isLoadingHolidays = true
         holidaysErrorMessage = nil
+        isHolidaysStale = false
         let year = Calendar.current.component(.year, from: .now)
-        do {
-            holidays = try await HolidayAPIClient.fetchHolidays(countryCode: leg.countryCode, year: year)
-        } catch {
+
+        let result = await APICache.fetch(key: "holidays-\(leg.countryCode)-\(year)") {
+            try await HolidayAPIClient.fetchHolidays(countryCode: leg.countryCode, year: year)
+        }
+        if let value = result.value {
+            holidays = value
+            isHolidaysStale = result.isStale
+        } else {
             holidaysErrorMessage = "オフラインか、祝日情報を取得できませんでした。"
         }
         isLoadingHolidays = false

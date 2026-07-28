@@ -6,6 +6,7 @@ struct ForexView: View {
 
     @State private var amountText = "10000"
     @State private var rate: Double?
+    @State private var isStale = false
     @State private var errorMessage: String?
     @State private var isLoading = false
 
@@ -41,6 +42,11 @@ struct ForexView: View {
                                 Text("為替レート: 1 JPY ≒ \(rate, specifier: "%.4f") \(targetCurrencyCode)")
                                     .font(.footnote)
                                     .foregroundStyle(.secondary)
+                                if isStale {
+                                    Text("オフライン — 前回取得時点の情報")
+                                        .font(.caption2)
+                                        .foregroundStyle(.secondary)
+                                }
                             } else if let errorMessage {
                                 Text(errorMessage)
                                     .font(.footnote)
@@ -73,9 +79,15 @@ struct ForexView: View {
         guard let targetCurrencyCode else { return }
         isLoading = true
         errorMessage = nil
-        do {
-            rate = try await ForexAPIClient.fetchRate(to: targetCurrencyCode)
-        } catch {
+        isStale = false
+
+        let result = await APICache.fetch(key: "forex-JPY-\(targetCurrencyCode)") {
+            try await ForexAPIClient.fetchRate(to: targetCurrencyCode)
+        }
+        if let value = result.value {
+            rate = value
+            isStale = result.isStale
+        } else {
             errorMessage = "オフラインか、為替レートを取得できませんでした。"
         }
         isLoading = false

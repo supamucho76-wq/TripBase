@@ -5,6 +5,7 @@ struct WeatherView: View {
     @Query(sort: \Trip.createdAt) private var trips: [Trip]
 
     @State private var forecastsByLegID: [UUID: WeatherForecast] = [:]
+    @State private var staleLegIDs: Set<UUID> = []
     @State private var errorsByLegID: [UUID: String] = [:]
     @State private var loadingLegIDs: Set<UUID> = []
 
@@ -58,6 +59,11 @@ struct WeatherView: View {
             }
             if let forecast = forecastsByLegID[leg.id] {
                 forecastRows(forecast)
+                if staleLegIDs.contains(leg.id) {
+                    Text("オフライン — 前回取得時点の情報")
+                        .font(.caption2)
+                        .foregroundStyle(.secondary)
+                }
             } else if let errorMessage = errorsByLegID[leg.id] {
                 Text(errorMessage)
                     .font(.footnote)
@@ -85,13 +91,18 @@ struct WeatherView: View {
     private func loadForecasts() async {
         for leg in relevantLegs where forecastsByLegID[leg.id] == nil {
             loadingLegIDs.insert(leg.id)
-            do {
-                if let forecast = try await WeatherAPIClient.fetchForecast(cityName: leg.cityName) {
-                    forecastsByLegID[leg.id] = forecast
-                } else {
-                    errorsByLegID[leg.id] = "この都市の天気は取得できませんでした。"
+            let result = await APICache.fetch(key: "weather-\(leg.cityName)") {
+                guard let forecast = try await WeatherAPIClient.fetchForecast(cityName: leg.cityName) else {
+                    throw URLError(.cannotFindHost)
                 }
-            } catch {
+                return forecast
+            }
+            if let forecast = result.value {
+                forecastsByLegID[leg.id] = forecast
+                if result.isStale {
+                    staleLegIDs.insert(leg.id)
+                }
+            } else {
                 errorsByLegID[leg.id] = "オフラインか、天気を取得できませんでした。"
             }
             loadingLegIDs.remove(leg.id)
