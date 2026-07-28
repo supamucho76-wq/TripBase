@@ -89,9 +89,10 @@ struct DestinationInfoView: View {
         holidaysErrorMessage = nil
         isHolidaysStale = false
         let year = Calendar.current.component(.year, from: .now)
+        let countryCode = leg.countryCode
 
-        let result = await APICache.fetch(key: "holidays-\(leg.countryCode)-\(year)") {
-            try await HolidayAPIClient.fetchHolidays(countryCode: leg.countryCode, year: year)
+        let result = await APICache.fetch(key: "holidays-\(countryCode)-\(year)") {
+            try await HolidayAPIClient.fetchHolidays(countryCode: countryCode, year: year)
         }
         if let value = result.value {
             holidays = value

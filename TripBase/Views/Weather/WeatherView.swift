@@ -90,22 +90,24 @@ struct WeatherView: View {
 
     private func loadForecasts() async {
         for leg in relevantLegs where forecastsByLegID[leg.id] == nil {
-            loadingLegIDs.insert(leg.id)
-            let result = await APICache.fetch(key: "weather-\(leg.cityName)") {
-                guard let forecast = try await WeatherAPIClient.fetchForecast(cityName: leg.cityName) else {
+            let legID = leg.id
+            let cityName = leg.cityName
+            loadingLegIDs.insert(legID)
+            let result = await APICache.fetch(key: "weather-\(cityName)") {
+                guard let forecast = try await WeatherAPIClient.fetchForecast(cityName: cityName) else {
                     throw URLError(.cannotFindHost)
                 }
                 return forecast
             }
             if let forecast = result.value {
-                forecastsByLegID[leg.id] = forecast
+                forecastsByLegID[legID] = forecast
                 if result.isStale {
-                    staleLegIDs.insert(leg.id)
+                    staleLegIDs.insert(legID)
                 }
             } else {
-                errorsByLegID[leg.id] = "オフラインか、天気を取得できませんでした。"
+                errorsByLegID[legID] = "オフラインか、天気を取得できませんでした。"
             }
-            loadingLegIDs.remove(leg.id)
+            loadingLegIDs.remove(legID)
         }
     }
 }

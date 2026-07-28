@@ -5,7 +5,7 @@ struct CachedValue<T: Codable>: Codable {
     let fetchedAt: Date
 }
 
-struct FetchResult<T> {
+struct FetchResult<T>: Sendable where T: Sendable {
     let value: T?
     let isStale: Bool
     let fetchedAt: Date?
@@ -40,7 +40,7 @@ enum APICache {
 
     /// Tries a live fetch first; on failure, falls back to the last cached
     /// value for `key` if one exists, marking the result as stale.
-    static func fetch<T: Codable>(key: String, live: () async throws -> T) async -> FetchResult<T> {
+    static func fetch<T: Codable & Sendable>(key: String, live: @Sendable () async throws -> T) async -> FetchResult<T> {
         do {
             let value = try await live()
             save(value, key: key)
