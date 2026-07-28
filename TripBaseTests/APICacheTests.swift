@@ -27,7 +27,7 @@ final class APICacheTests: XCTestCase {
         let key = uniqueKey()
         APICache.save(Sample(value: 7), key: key)
 
-        let result = await APICache.fetch(key: key) {
+        let result = await APICache.fetch(key: key) { () async throws -> Sample in
             throw URLError(.notConnectedToInternet)
         }
 
@@ -38,7 +38,7 @@ final class APICacheTests: XCTestCase {
     func testFetchReturnsNilWhenNoCacheExists() async {
         let key = uniqueKey()
 
-        let result = await APICache.fetch(key: key) {
+        let result = await APICache.fetch(key: key) { () async throws -> Sample in
             throw URLError(.notConnectedToInternet)
         }
 
