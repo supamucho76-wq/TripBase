@@ -11,6 +11,7 @@ struct DestinationInfoView: View {
         ScrollView {
             VStack(alignment: .leading, spacing: 16) {
                 if let countryInfo {
+                    timezoneSection(countryInfo)
                     plugVoltageSection(countryInfo)
                     tippingSection(countryInfo)
                     packingSection(countryInfo)
@@ -29,6 +30,25 @@ struct DestinationInfoView: View {
         .background(AppTheme.background)
         .navigationTitle("\(CountryInfoStore.displayName(for: leg.countryCode))の情報")
         .navigationBarTitleDisplayMode(.inline)
+    }
+
+    private func timezoneSection(_ info: CountryInfo) -> some View {
+        let diff = TimezoneService.hourDifference(destinationIdentifier: info.timeZoneIdentifier)
+        let currentTime = TimezoneService.currentTime(destinationIdentifier: info.timeZoneIdentifier)
+
+        return VStack(alignment: .leading, spacing: 8) {
+            Label("時差", systemImage: "clock")
+                .font(.headline)
+            if let currentTime {
+                Text("現地時刻: \(currentTime)")
+            }
+            if let diff {
+                Text(diff == 0 ? "日本と時差はありません" : "日本より\(diff > 0 ? "\(diff)時間進んでいます" : "\(-diff)時間遅れています")")
+                    .foregroundStyle(.secondary)
+            }
+        }
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .cardStyle()
     }
 
     private func plugVoltageSection(_ info: CountryInfo) -> some View {
