@@ -3,6 +3,10 @@ import SwiftUI
 struct DestinationInfoView: View {
     let leg: TripLeg
 
+    @State private var holidays: [PublicHoliday] = []
+    @State private var holidaysErrorMessage: String?
+    @State private var isLoadingHolidays = false
+
     private var countryInfo: CountryInfo? {
         CountryInfoStore.lookup(leg.countryCode)
     }
@@ -12,6 +16,7 @@ struct DestinationInfoView: View {
             VStack(alignment: .leading, spacing: 16) {
                 if let countryInfo {
                     timezoneSection(countryInfo)
+                    holidaySection
                     plugVoltageSection(countryInfo)
                     tippingSection(countryInfo)
                     packingSection(countryInfo)
@@ -30,6 +35,59 @@ struct DestinationInfoView: View {
         .background(AppTheme.background)
         .navigationTitle("\(CountryInfoStore.displayName(for: leg.countryCode))の情報")
         .navigationBarTitleDisplayMode(.inline)
+        .task(id: leg.countryCode) {
+            await loadHolidays()
+        }
+    }
+
+    private var holidaySection: some View {
+        VStack(alignment: .leading, spacing: 8) {
+            HStack {
+                Label("現地の祝日", systemImage: "calendar")
+                    .font(.headline)
+                Spacer()
+                if isLoadingHolidays {
+                    ProgressView()
+                }
+            }
+            if !holidays.isEmpty {
+                ForEach(upcomingHolidays) { holiday in
+                    HStack {
+                        Text(holiday.date)
+                        Spacer()
+                        Text(holiday.localName)
+                            .foregroundStyle(.secondary)
+                    }
+                    .font(.footnote)
+                }
+            } else if let holidaysErrorMessage {
+                Text(holidaysErrorMessage)
+                    .font(.footnote)
+                    .foregroundStyle(.secondary)
+            } else if !isLoadingHolidays {
+                Text("今年の祝日データはありません。")
+                    .font(.footnote)
+                    .foregroundStyle(.secondary)
+            }
+        }
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .cardStyle()
+    }
+
+    private var upcomingHolidays: [PublicHoliday] {
+        Array(holidays.prefix(5))
+    }
+
+    private func loadHolidays() async {
+        isLoadingHolidays = true
+        holidaysErrorMessage = nil
+        let year = Calendar.current.component(.year, from: .now)
+        do {
+            holidays = try await HolidayAPIClient.fetchHolidays(countryCode: leg.countryCode, year: year)
+        } catch {
+            holidaysErrorMessage = "オフラインか、祝日情報を取得できませんでした。"
+        }
+        isLoadingHolidays = false
     }
 
     private func timezoneSection(_ info: CountryInfo) -> some View {
