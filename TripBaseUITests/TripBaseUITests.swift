@@ -31,8 +31,25 @@ final class TripBaseUITests: XCTestCase {
         app.textFields["leg.city"].typeText("台北")
         app.textFields["leg.countryCode"].tap()
         app.textFields["leg.countryCode"].typeText("TW")
-        app.buttons["leg.save"].tap()
+        scrollToButton("leg.save").tap()
 
         XCTAssertTrue(app.staticTexts["台北"].waitForExistence(timeout: 8))
+    }
+
+    @MainActor
+    private func scrollToButton(
+        _ identifier: String,
+        maximumSwipes: Int = 6
+    ) -> XCUIElement {
+        let button = app.buttons[identifier]
+        for _ in 0..<maximumSwipes {
+            if button.exists && button.isHittable {
+                return button
+            }
+            app.swipeUp()
+        }
+        XCTAssertTrue(button.exists, "\(identifier) がスクロール後も見つかりません")
+        XCTAssertTrue(button.isHittable, "\(identifier) をタップできません")
+        return button
     }
 }
