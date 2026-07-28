@@ -1,0 +1,39 @@
+# Xcode / XcodeGen
+TripBase.xcodeproj/
+*.xcworkspace/xcuserdata/
+*.xcodeproj/xcuserdata/
+xcuserdata/
+DerivedData/
+build/
+*.xcuserstate
+*.xccheckout
+*.xcscmblueprint
+
+# Swift Package Manager
+.build/
+.swiftpm/
+Package.resolved
+
+# Signing and App Store secrets
+*.p8
+*.p12
+*.cer
+*.mobileprovision
+Secrets.xcconfig
+ExportOptions.plist
+
+# macOS / Windows
+.DS_Store
+Thumbs.db
+Desktop.ini
+
+# Editors
+.idea/
+.vscode/
+*.swp
+
+# Temporary output
+build-artifacts/
+*.log
+*.ipa
+*.dSYM.zip
