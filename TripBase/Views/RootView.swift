@@ -8,9 +8,9 @@ struct RootView: View {
             switch selection {
             case .home: HomeView()
             case .trips: NavigationStack { TripListView() }
-            case .calendar: CalendarView()
-            case .documents: DocumentsHomeView()
+            case .packing: NavigationStack { PackingHomeView() }
             case .more: MoreView()
+            case .settings: NavigationStack { SettingsView() }
             }
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity)

@@ -14,7 +14,9 @@ struct TripBaseApp: App {
     init() {
         let schema = Schema([
             Trip.self,
-            TripLeg.self
+            TripLeg.self,
+            PackingItem.self,
+            LocalPlace.self
         ])
         let configuration = ModelConfiguration(
             schema: schema,

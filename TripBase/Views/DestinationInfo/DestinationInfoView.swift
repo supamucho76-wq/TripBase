@@ -1,20 +1,30 @@
+import SwiftData
 import SwiftUI
 
 struct DestinationInfoView: View {
-    let leg: TripLeg
+    @Bindable var leg: TripLeg
 
+    @Environment(\.modelContext) private var modelContext
     @State private var holidays: [PublicHoliday] = []
     @State private var holidaysErrorMessage: String?
     @State private var isLoadingHolidays = false
     @State private var isHolidaysStale = false
+    @State private var isAddPlacePresented = false
 
     private var countryInfo: CountryInfo? {
         CountryInfoStore.lookup(leg.countryCode)
     }
 
+    private var sortedPlaces: [LocalPlace] {
+        leg.localPlaces.sorted { $0.orderIndex < $1.orderIndex }
+    }
+
     var body: some View {
         ScrollView {
             VStack(alignment: .leading, spacing: 16) {
+                hotelToolsSection
+                localPlacesSection
+
                 if let countryInfo {
                     timezoneSection(countryInfo)
                     holidaySection
@@ -39,6 +49,137 @@ struct DestinationInfoView: View {
         .task(id: leg.countryCode) {
             await loadHolidays()
         }
+        .sheet(isPresented: $isAddPlacePresented) {
+            LocalPlaceEditorView(leg: leg)
+        }
+    }
+
+    private func mapsURL(for address: String) -> URL? {
+        guard !address.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty else { return nil }
+        var components = URLComponents(string: "https://www.google.com/maps/search/")
+        components?.queryItems = [
+            URLQueryItem(name: "api", value: "1"),
+            URLQueryItem(name: "query", value: address)
+        ]
+        return components?.url
+    }
+
+    private var hotelToolsSection: some View {
+        Group {
+            if !leg.hotelName.isEmpty || !leg.hotelAddress.isEmpty {
+                VStack(alignment: .leading, spacing: 8) {
+                    Label("ホテル", systemImage: "bed.double")
+                        .font(.headline)
+                    if !leg.hotelName.isEmpty {
+                        Text(leg.hotelName)
+                            .font(.subheadline.bold())
+                    }
+                    if !leg.hotelAddress.isEmpty {
+                        Text(leg.hotelAddress)
+                            .font(.footnote)
+                            .foregroundStyle(.secondary)
+                    }
+                    HStack(spacing: 16) {
+                        if !leg.hotelAddress.isEmpty {
+                            Button {
+                                UIPasteboard.general.string = leg.hotelAddress
+                            } label: {
+                                Label("住所をコピー", systemImage: "doc.on.doc")
+                            }
+                            if let url = mapsURL(for: leg.hotelAddress) {
+                                Link(destination: url) {
+                                    Label("地図で開く", systemImage: "map")
+                                }
+                            }
+                        }
+                        if !leg.hotelBookingReference.isEmpty {
+                            Button {
+                                UIPasteboard.general.string = leg.hotelBookingReference
+                            } label: {
+                                Label("予約番号をコピー", systemImage: "number")
+                            }
+                        }
+                    }
+                    .font(.footnote)
+                }
+                .frame(maxWidth: .infinity, alignment: .leading)
+                .cardStyle()
+            }
+        }
+    }
+
+    private var localPlacesSection: some View {
+        VStack(alignment: .leading, spacing: 8) {
+            HStack {
+                Label("よく使う場所", systemImage: "mappin.and.ellipse")
+                    .font(.headline)
+                Spacer()
+                Button {
+                    isAddPlacePresented = true
+                } label: {
+                    Image(systemName: "plus.circle.fill")
+                }
+            }
+            if sortedPlaces.isEmpty {
+                Text("勤務先・空港・タクシー行き先・病院・コンビニなどを登録しておくと、出張中すぐに呼び出せます。")
+                    .font(.footnote)
+                    .foregroundStyle(.secondary)
+            } else {
+                ForEach(sortedPlaces) { place in
+                    localPlaceRow(place)
+                    if place.id != sortedPlaces.last?.id {
+                        Divider()
+                    }
+                }
+            }
+        }
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .cardStyle()
+    }
+
+    private func localPlaceRow(_ place: LocalPlace) -> some View {
+        VStack(alignment: .leading, spacing: 4) {
+            HStack {
+                Label(place.name, systemImage: place.category.systemImage)
+                    .font(.subheadline.bold())
+                Spacer()
+                Text(place.category.title)
+                    .font(.caption2)
+                    .foregroundStyle(.secondary)
+            }
+            if !place.address.isEmpty {
+                Text(place.address)
+                    .font(.footnote)
+                    .foregroundStyle(.secondary)
+            }
+            HStack(spacing: 16) {
+                if !place.address.isEmpty {
+                    Button {
+                        UIPasteboard.general.string = place.address
+                    } label: {
+                        Label("住所をコピー", systemImage: "doc.on.doc")
+                    }
+                    if let url = mapsURL(for: place.address) {
+                        Link(destination: url) {
+                            Label("地図で開く", systemImage: "map")
+                        }
+                    }
+                }
+                if !place.phone.isEmpty, let phoneURL = URL(string: "tel://\(place.phone.filter { $0.isNumber || $0 == "+" })") {
+                    Link(destination: phoneURL) {
+                        Label("電話", systemImage: "phone")
+                    }
+                }
+                Spacer()
+                Button(role: .destructive) {
+                    modelContext.delete(place)
+                } label: {
+                    Image(systemName: "trash")
+                }
+            }
+            .font(.footnote)
+        }
+        .padding(.vertical, 2)
     }
 
     private var holidaySection: some View {

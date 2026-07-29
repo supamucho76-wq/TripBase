@@ -3,9 +3,9 @@ import SwiftUI
 enum TripBaseTab: Int, CaseIterable, Identifiable {
     case home
     case trips
-    case calendar
-    case documents
+    case packing
     case more
+    case settings
 
     var id: Int { rawValue }
 
@@ -13,9 +13,9 @@ enum TripBaseTab: Int, CaseIterable, Identifiable {
         switch self {
         case .home: "ホーム"
         case .trips: "出張"
-        case .calendar: "カレンダー"
-        case .documents: "書類"
+        case .packing: "持ち物"
         case .more: "その他"
+        case .settings: "設定"
         }
     }
 
@@ -23,9 +23,9 @@ enum TripBaseTab: Int, CaseIterable, Identifiable {
         switch self {
         case .home: "house.fill"
         case .trips: "airplane"
-        case .calendar: "calendar"
-        case .documents: "doc.text.fill"
+        case .packing: "checklist"
         case .more: "ellipsis.circle.fill"
+        case .settings: "gearshape.fill"
         }
     }
 
@@ -33,9 +33,9 @@ enum TripBaseTab: Int, CaseIterable, Identifiable {
         switch self {
         case .home: "tab.home"
         case .trips: "tab.trips"
-        case .calendar: "tab.calendar"
-        case .documents: "tab.documents"
+        case .packing: "tab.packing"
         case .more: "tab.more"
+        case .settings: "tab.settings"
         }
     }
 }
