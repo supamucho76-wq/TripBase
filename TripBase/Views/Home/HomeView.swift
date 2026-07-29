@@ -42,6 +42,7 @@ struct HomeView: View {
                 }
                 .padding()
             }
+            .contentMargins(.bottom, 90, for: .scrollContent)
             .background(AppTheme.background)
             .navigationTitle("出張Base")
             .navigationBarTitleDisplayMode(.inline)

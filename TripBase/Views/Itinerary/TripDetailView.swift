@@ -128,6 +128,7 @@ struct TripDetailView: View {
                 }
             }
         }
+        .contentMargins(.bottom, 90, for: .scrollContent)
         .navigationTitle(trip.name)
         .navigationBarTitleDisplayMode(.inline)
         .navigationDestination(for: TripLeg.self) { leg in

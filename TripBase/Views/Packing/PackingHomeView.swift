@@ -150,6 +150,7 @@ struct PackingHomeView: View {
             }
         }
         .listStyle(.insetGrouped)
+        .contentMargins(.bottom, 90, for: .scrollContent)
     }
 
     private func categoryHeader(group: (category: PackingCategory, items: [PackingItem])) -> some View {

@@ -43,6 +43,7 @@ struct DestinationInfoView: View {
             }
             .padding()
         }
+        .contentMargins(.bottom, 90, for: .scrollContent)
         .background(AppTheme.background)
         .navigationTitle("\(CountryInfoStore.displayName(for: leg.countryCode))の情報")
         .navigationBarTitleDisplayMode(.inline)

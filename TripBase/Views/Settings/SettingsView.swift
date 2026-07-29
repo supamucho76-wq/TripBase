@@ -33,6 +33,7 @@ struct SettingsView: View {
                 LabeledContent("バージョン", value: "0.1.0")
             }
         }
+        .contentMargins(.bottom, 90, for: .scrollContent)
         .navigationTitle("設定")
         .confirmationDialog(
             "すべてのデータを削除しますか?",

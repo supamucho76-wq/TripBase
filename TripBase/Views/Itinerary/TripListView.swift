@@ -107,6 +107,7 @@ struct TripListView: View {
                         }
                     }
                     .listStyle(.plain)
+                    .contentMargins(.bottom, 90, for: .scrollContent)
                 }
             }
         }

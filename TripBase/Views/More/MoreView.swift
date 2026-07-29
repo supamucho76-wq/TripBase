@@ -78,6 +78,7 @@ struct MoreView: View {
                 }
                 .padding()
             }
+            .contentMargins(.bottom, 90, for: .scrollContent)
             .background(AppTheme.background)
             .navigationTitle("ツール")
         }

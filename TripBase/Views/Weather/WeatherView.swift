@@ -38,6 +38,7 @@ struct WeatherView: View {
                 }
             }
         }
+        .contentMargins(.bottom, 90, for: .scrollContent)
         .background(AppTheme.background)
         .navigationTitle("天気")
         .task(id: relevantLegs.map(\.id)) {

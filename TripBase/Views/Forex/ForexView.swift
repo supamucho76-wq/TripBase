@@ -61,6 +61,7 @@ struct ForexView: View {
                 )
             }
         }
+        .contentMargins(.bottom, 90, for: .scrollContent)
         .navigationTitle("為替")
         .task(id: targetCurrencyCode) {
             await loadRate()
