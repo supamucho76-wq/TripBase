@@ -71,85 +71,83 @@ struct TripListView: View {
     }
 
     var body: some View {
-        NavigationStack {
-            VStack(spacing: 12) {
-                Picker("ステータス", selection: $statusFilter) {
-                    ForEach(TripStatusFilter.allCases) { filter in
-                        Text(filter.title).tag(filter)
-                    }
+        VStack(spacing: 12) {
+            Picker("ステータス", selection: $statusFilter) {
+                ForEach(TripStatusFilter.allCases) { filter in
+                    Text(filter.title).tag(filter)
                 }
-                .pickerStyle(.segmented)
-                .padding(.horizontal)
+            }
+            .pickerStyle(.segmented)
+            .padding(.horizontal)
 
-                Picker("地域", selection: $regionFilter) {
-                    ForEach(TripRegionFilter.allCases) { filter in
-                        Text(filter.title).tag(filter)
-                    }
+            Picker("地域", selection: $regionFilter) {
+                ForEach(TripRegionFilter.allCases) { filter in
+                    Text(filter.title).tag(filter)
                 }
-                .pickerStyle(.segmented)
-                .padding(.horizontal)
+            }
+            .pickerStyle(.segmented)
+            .padding(.horizontal)
 
-                Group {
-                    if filteredTrips.isEmpty {
-                        ContentUnavailableView(
-                            trips.isEmpty ? "出張がまだありません" : "該当する出張がありません",
-                            systemImage: "airplane",
-                            description: Text(trips.isEmpty ? "右上の + から出張を追加できます。" : "フィルタ条件を変えてみてください。")
-                        )
-                    } else {
-                        List(filteredTrips) { trip in
-                            NavigationLink(value: trip) {
-                                TripRow(trip: trip)
-                            }
-                            .swipeActions {
-                                Button("削除", role: .destructive) {
-                                    tripPendingDelete = trip
-                                }
+            Group {
+                if filteredTrips.isEmpty {
+                    ContentUnavailableView(
+                        trips.isEmpty ? "出張がまだありません" : "該当する出張がありません",
+                        systemImage: "airplane",
+                        description: Text(trips.isEmpty ? "右上の + から出張を追加できます。" : "フィルタ条件を変えてみてください。")
+                    )
+                } else {
+                    List(filteredTrips) { trip in
+                        NavigationLink(value: trip) {
+                            TripRow(trip: trip)
+                        }
+                        .swipeActions {
+                            Button("削除", role: .destructive) {
+                                tripPendingDelete = trip
                             }
                         }
-                        .listStyle(.plain)
                     }
+                    .listStyle(.plain)
                 }
             }
-            .navigationTitle("出張一覧")
-            .navigationDestination(for: Trip.self) { trip in
-                TripDetailView(trip: trip)
-            }
-            .toolbar {
-                ToolbarItem(placement: .primaryAction) {
-                    Button {
-                        isNewTripPresented = true
-                    } label: {
-                        Label("出張を追加", systemImage: "plus")
-                    }
-                    .accessibilityIdentifier("trip.add")
+        }
+        .navigationTitle("出張一覧")
+        .navigationDestination(for: Trip.self) { trip in
+            TripDetailView(trip: trip)
+        }
+        .toolbar {
+            ToolbarItem(placement: .primaryAction) {
+                Button {
+                    isNewTripPresented = true
+                } label: {
+                    Label("出張を追加", systemImage: "plus")
                 }
+                .accessibilityIdentifier("trip.add")
             }
-            .sheet(isPresented: $isNewTripPresented) {
-                TripEditorView(existingTrip: nil)
-            }
-            .confirmationDialog(
-                "この出張を削除しますか?",
-                isPresented: Binding(
-                    get: { tripPendingDelete != nil },
-                    set: { isPresented in
-                        if !isPresented { tripPendingDelete = nil }
-                    }
-                ),
-                titleVisibility: .visible
-            ) {
-                Button("削除", role: .destructive) {
-                    if let trip = tripPendingDelete {
-                        modelContext.delete(trip)
-                    }
-                    tripPendingDelete = nil
+        }
+        .sheet(isPresented: $isNewTripPresented) {
+            TripEditorView(existingTrip: nil)
+        }
+        .confirmationDialog(
+            "この出張を削除しますか?",
+            isPresented: Binding(
+                get: { tripPendingDelete != nil },
+                set: { isPresented in
+                    if !isPresented { tripPendingDelete = nil }
                 }
-                Button("キャンセル", role: .cancel) {
-                    tripPendingDelete = nil
+            ),
+            titleVisibility: .visible
+        ) {
+            Button("削除", role: .destructive) {
+                if let trip = tripPendingDelete {
+                    modelContext.delete(trip)
                 }
-            } message: {
-                Text("旅程・宿泊情報もすべて削除され、元に戻せません。")
+                tripPendingDelete = nil
             }
+            Button("キャンセル", role: .cancel) {
+                tripPendingDelete = nil
+            }
+        } message: {
+            Text("旅程・宿泊情報もすべて削除され、元に戻せません。")
         }
     }
 }

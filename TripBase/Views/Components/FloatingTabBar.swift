@@ -2,40 +2,40 @@ import SwiftUI
 
 enum TripBaseTab: Int, CaseIterable, Identifiable {
     case home
-    case itinerary
-    case weather
-    case forex
-    case settings
+    case trips
+    case calendar
+    case documents
+    case more
 
     var id: Int { rawValue }
 
     var title: String {
         switch self {
         case .home: "ホーム"
-        case .itinerary: "出張"
-        case .weather: "天気"
-        case .forex: "為替"
-        case .settings: "設定"
+        case .trips: "出張"
+        case .calendar: "カレンダー"
+        case .documents: "書類"
+        case .more: "その他"
         }
     }
 
     var systemImage: String {
         switch self {
         case .home: "house.fill"
-        case .itinerary: "airplane"
-        case .weather: "cloud.sun.fill"
-        case .forex: "yensign.circle.fill"
-        case .settings: "gearshape.fill"
+        case .trips: "airplane"
+        case .calendar: "calendar"
+        case .documents: "doc.text.fill"
+        case .more: "ellipsis.circle.fill"
         }
     }
 
     var accessibilityIdentifier: String {
         switch self {
         case .home: "tab.home"
-        case .itinerary: "tab.itinerary"
-        case .weather: "tab.weather"
-        case .forex: "tab.forex"
-        case .settings: "tab.settings"
+        case .trips: "tab.trips"
+        case .calendar: "tab.calendar"
+        case .documents: "tab.documents"
+        case .more: "tab.more"
         }
     }
 }

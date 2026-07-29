@@ -24,48 +24,46 @@ struct ForexView: View {
     }
 
     var body: some View {
-        NavigationStack {
-            Group {
-                if let targetCurrencyCode {
-                    Form {
-                        Section("換算元（日本円）") {
-                            TextField("金額", text: $amountText)
-                                .keyboardType(.numberPad)
-                        }
+        Group {
+            if let targetCurrencyCode {
+                Form {
+                    Section("換算元（日本円）") {
+                        TextField("金額", text: $amountText)
+                            .keyboardType(.numberPad)
+                    }
 
-                        Section(targetCurrencyCode) {
-                            if isLoading {
-                                ProgressView()
-                            } else if let rate {
-                                Text(convertedAmountText(rate: rate))
-                                    .font(.title2.bold())
-                                Text("為替レート: 1 JPY ≒ \(rate, specifier: "%.4f") \(targetCurrencyCode)")
-                                    .font(.footnote)
-                                    .foregroundStyle(.secondary)
-                                if isStale {
-                                    Text("オフライン — 前回取得時点の情報")
-                                        .font(.caption2)
-                                        .foregroundStyle(.secondary)
-                                }
-                            } else if let errorMessage {
-                                Text(errorMessage)
-                                    .font(.footnote)
+                    Section(targetCurrencyCode) {
+                        if isLoading {
+                            ProgressView()
+                        } else if let rate {
+                            Text(convertedAmountText(rate: rate))
+                                .font(.title2.bold())
+                            Text("為替レート: 1 JPY ≒ \(rate, specifier: "%.4f") \(targetCurrencyCode)")
+                                .font(.footnote)
+                                .foregroundStyle(.secondary)
+                            if isStale {
+                                Text("オフライン — 前回取得時点の情報")
+                                    .font(.caption2)
                                     .foregroundStyle(.secondary)
                             }
+                        } else if let errorMessage {
+                            Text(errorMessage)
+                                .font(.footnote)
+                                .foregroundStyle(.secondary)
                         }
                     }
-                } else {
-                    ContentUnavailableView(
-                        "行程がまだありません",
-                        systemImage: "yensign.circle",
-                        description: Text("出張先を登録すると、現地通貨への換算ができるようになります。")
-                    )
                 }
+            } else {
+                ContentUnavailableView(
+                    "行程がまだありません",
+                    systemImage: "yensign.circle",
+                    description: Text("出張先を登録すると、現地通貨への換算ができるようになります。")
+                )
             }
-            .navigationTitle("為替")
-            .task(id: targetCurrencyCode) {
-                await loadRate()
-            }
+        }
+        .navigationTitle("為替")
+        .task(id: targetCurrencyCode) {
+            await loadRate()
         }
     }
 
@@ -95,5 +93,7 @@ struct ForexView: View {
 }
 
 #Preview {
-    ForexView()
+    NavigationStack {
+        ForexView()
+    }
 }

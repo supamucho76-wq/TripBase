@@ -7,10 +7,10 @@ struct RootView: View {
         Group {
             switch selection {
             case .home: HomeView()
-            case .itinerary: TripListView()
-            case .weather: WeatherView()
-            case .forex: ForexView()
-            case .settings: SettingsView()
+            case .trips: NavigationStack { TripListView() }
+            case .calendar: CalendarView()
+            case .documents: DocumentsHomeView()
+            case .more: MoreView()
             }
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity)

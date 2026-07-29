@@ -20,30 +20,28 @@ struct WeatherView: View {
     }
 
     var body: some View {
-        NavigationStack {
-            Group {
-                if relevantLegs.isEmpty {
-                    ContentUnavailableView(
-                        "行程がまだありません",
-                        systemImage: "cloud.sun",
-                        description: Text("出張先を登録すると、天気がここに表示されます。")
-                    )
-                } else {
-                    ScrollView {
-                        VStack(spacing: 16) {
-                            ForEach(relevantLegs) { leg in
-                                weatherCard(for: leg)
-                            }
+        Group {
+            if relevantLegs.isEmpty {
+                ContentUnavailableView(
+                    "行程がまだありません",
+                    systemImage: "cloud.sun",
+                    description: Text("出張先を登録すると、天気がここに表示されます。")
+                )
+            } else {
+                ScrollView {
+                    VStack(spacing: 16) {
+                        ForEach(relevantLegs) { leg in
+                            weatherCard(for: leg)
                         }
-                        .padding()
                     }
+                    .padding()
                 }
             }
-            .background(AppTheme.background)
-            .navigationTitle("天気")
-            .task(id: relevantLegs.map(\.id)) {
-                await loadForecasts()
-            }
+        }
+        .background(AppTheme.background)
+        .navigationTitle("天気")
+        .task(id: relevantLegs.map(\.id)) {
+            await loadForecasts()
         }
     }
 
@@ -132,5 +130,7 @@ enum WeatherCodeDescription {
 }
 
 #Preview {
-    WeatherView()
+    NavigationStack {
+        WeatherView()
+    }
 }
