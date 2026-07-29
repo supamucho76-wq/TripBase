@@ -172,15 +172,14 @@ struct TripDetailView: View {
         .sheet(isPresented: $isTripEditorPresented) {
             TripEditorView(existingTrip: trip)
         }
-        .confirmationDialog(
-            "この行程を削除しますか?",
+        .alert(
+            "この行程を削除しますか？",
             isPresented: Binding(
                 get: { legPendingDelete != nil },
                 set: { isPresented in
                     if !isPresented { legPendingDelete = nil }
                 }
-            ),
-            titleVisibility: .visible
+            )
         ) {
             Button("削除", role: .destructive) {
                 if let leg = legPendingDelete {
