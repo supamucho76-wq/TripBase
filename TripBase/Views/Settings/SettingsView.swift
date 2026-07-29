@@ -5,10 +5,19 @@ struct SettingsView: View {
     @Environment(\.modelContext) private var modelContext
     @Query private var trips: [Trip]
     @State private var isResetConfirmationPresented = false
+    @AppStorage(DateFormatPreference.storageKey) private var dateFormatPreferenceRaw: String = DateFormatPreference.gregorian.rawValue
 
     var body: some View {
         NavigationStack {
             Form {
+                Section("日付表示") {
+                    Picker("形式", selection: $dateFormatPreferenceRaw) {
+                        ForEach(DateFormatPreference.allCases) { preference in
+                            Text(preference.title).tag(preference.rawValue)
+                        }
+                    }
+                }
+
                 Section("データ") {
                     Label("旅程データは現在、この端末内に保存されます", systemImage: "iphone")
                     Button("すべてのデータを削除", role: .destructive) {
