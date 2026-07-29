@@ -110,10 +110,20 @@ struct TripDetailView: View {
                     )
                 }
             } else {
-                Section("行程") {
+                Section {
                     ForEach(sortedLegs) { leg in
-                        NavigationLink(value: leg) {
-                            TripLegRow(leg: leg)
+                        HStack(spacing: 8) {
+                            NavigationLink(value: leg) {
+                                TripLegRow(leg: leg)
+                            }
+                            Button {
+                                legPendingEdit = leg
+                            } label: {
+                                Image(systemName: "pencil.circle.fill")
+                                    .font(.title3)
+                                    .foregroundStyle(AppTheme.accent)
+                            }
+                            .buttonStyle(.plain)
                         }
                         .swipeActions {
                             Button("削除", role: .destructive) {
@@ -125,6 +135,10 @@ struct TripDetailView: View {
                             .tint(AppTheme.accent)
                         }
                     }
+                } header: {
+                    Text("行程")
+                } footer: {
+                    Text("行程をタップすると現地情報、鉛筆アイコンをタップすると編集画面が開きます。")
                 }
             }
         }
