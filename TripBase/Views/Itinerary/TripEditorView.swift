@@ -8,12 +8,14 @@ struct TripEditorView: View {
     @Environment(\.dismiss) private var dismiss
 
     @State private var name: String
+    @State private var purpose: String
     @State private var notes: String
     @State private var errorMessage: String?
 
     init(existingTrip: Trip?) {
         self.existingTrip = existingTrip
         _name = State(initialValue: existingTrip?.name ?? "")
+        _purpose = State(initialValue: existingTrip?.purpose ?? "")
         _notes = State(initialValue: existingTrip?.notes ?? "")
     }
 
@@ -23,6 +25,7 @@ struct TripEditorView: View {
                 Section {
                     TextField("出張名（必須）", text: $name)
                         .accessibilityIdentifier("trip.name")
+                    TextField("出張目的", text: $purpose)
                     TextField("メモ", text: $notes, axis: .vertical)
                 }
 
@@ -51,6 +54,7 @@ struct TripEditorView: View {
     private func save() {
         let trip = existingTrip ?? Trip(name: "")
         trip.name = name.trimmingCharacters(in: .whitespacesAndNewlines)
+        trip.purpose = purpose.trimmingCharacters(in: .whitespacesAndNewlines)
         trip.notes = notes.trimmingCharacters(in: .whitespacesAndNewlines)
         trip.updatedAt = .now
 
