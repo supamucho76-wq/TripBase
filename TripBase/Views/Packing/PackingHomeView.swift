@@ -97,11 +97,17 @@ struct PackingHomeView: View {
             }
 
             if trip.packingItems.isEmpty {
-                Section("テンプレートから追加") {
-                    ForEach(PackingService.QuickTemplate.allCases) { template in
+                Section {
+                    ForEach(PackingService.recommendedTemplates(for: trip.tripType)) { template in
                         Button(template.title) {
                             applyTemplate(template, to: trip)
                         }
+                    }
+                } header: {
+                    Text("テンプレートから追加")
+                } footer: {
+                    if let tripType = trip.tripType {
+                        Text(tripType == .domestic ? "国内出張として、必要な持ち物のみ表示しています。" : "海外出張として、必要な持ち物のみ表示しています。")
                     }
                 }
             }

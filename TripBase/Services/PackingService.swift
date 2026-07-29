@@ -7,6 +7,17 @@ enum PackingService {
         return Double(checkedCount) / Double(items.count)
     }
 
+    static func recommendedTemplates(for tripType: TripType?) -> [QuickTemplate] {
+        switch tripType {
+        case .domestic:
+            [.domestic]
+        case .international:
+            [.international, .longTrip]
+        case nil:
+            QuickTemplate.allCases
+        }
+    }
+
     static func isUrgent(trip: Trip, now: Date = .now) -> Bool {
         guard let firstArrival = trip.legs.map(\.arrivalDate).min() else { return false }
         let calendar = Calendar.current
