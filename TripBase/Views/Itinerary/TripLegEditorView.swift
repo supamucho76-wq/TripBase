@@ -11,6 +11,7 @@ struct TripLegEditorView: View {
 
     @State private var countryCode: String
     @State private var cityName: String
+    @State private var weatherSearchName: String
     @State private var arrivalDate: Date
     @State private var departureDate: Date
     @State private var hotelName: String
@@ -30,6 +31,7 @@ struct TripLegEditorView: View {
 
         _countryCode = State(initialValue: existingLeg?.countryCode ?? "")
         _cityName = State(initialValue: existingLeg?.cityName ?? "")
+        _weatherSearchName = State(initialValue: existingLeg?.weatherSearchName ?? "")
         _arrivalDate = State(initialValue: existingLeg?.arrivalDate ?? .now)
         _departureDate = State(initialValue: existingLeg?.departureDate ?? .now)
         _hotelName = State(initialValue: existingLeg?.hotelName ?? "")
@@ -44,7 +46,7 @@ struct TripLegEditorView: View {
     var body: some View {
         NavigationStack {
             Form {
-                Section("目的地") {
+                Section {
                     Picker("国", selection: $countryCode) {
                         Text("選択してください").tag("")
                         ForEach(CountryInfoStore.allSorted) { info in
@@ -56,6 +58,19 @@ struct TripLegEditorView: View {
                         .accessibilityIdentifier("leg.city")
                     DatePicker("到着日", selection: $arrivalDate, displayedComponents: .date)
                     DatePicker("出発日", selection: $departureDate, displayedComponents: .date)
+                } header: {
+                    Text("目的地")
+                } footer: {
+                    Text("到着日: この都市に着く日 / 出発日: この都市を離れる日（次の目的地への移動日、または帰国日）")
+                }
+
+                Section {
+                    TextField("例: Taichung", text: $weatherSearchName)
+                        .accessibilityIdentifier("leg.weatherSearchName")
+                } header: {
+                    Text("天気検索用の都市名（任意）")
+                } footer: {
+                    Text("天気が見つからない場合、ここにローマ字表記を入力すると解決することがあります。空欄なら「都市名」をそのまま使います。")
                 }
 
                 Section("宿泊") {
@@ -131,6 +146,7 @@ struct TripLegEditorView: View {
         )
         leg.countryCode = countryCode.trimmingCharacters(in: .whitespacesAndNewlines).uppercased()
         leg.cityName = cityName.trimmingCharacters(in: .whitespacesAndNewlines)
+        leg.weatherSearchName = weatherSearchName.trimmingCharacters(in: .whitespacesAndNewlines)
         leg.arrivalDate = arrivalDate
         leg.departureDate = max(departureDate, arrivalDate)
         leg.hotelName = hotelName.trimmingCharacters(in: .whitespacesAndNewlines)

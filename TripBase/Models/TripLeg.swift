@@ -6,6 +6,7 @@ final class TripLeg {
     var id: UUID
     var countryCode: String
     var cityName: String
+    var weatherSearchName: String = ""
     var arrivalDate: Date
     var departureDate: Date
     var hotelName: String
@@ -29,6 +30,12 @@ final class TripLeg {
         set { visaStatusRawValue = newValue.rawValue }
     }
 
+    var weatherQueryName: String {
+        weatherSearchName.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty
+            ? cityName
+            : weatherSearchName
+    }
+
     var nightsCount: Int {
         max(0, Calendar.current.dateComponents([.day], from: arrivalDate, to: departureDate).day ?? 0)
     }
@@ -45,6 +52,7 @@ final class TripLeg {
         self.id = id
         self.countryCode = countryCode
         self.cityName = cityName
+        self.weatherSearchName = ""
         self.arrivalDate = arrivalDate
         self.departureDate = departureDate
         self.hotelName = ""

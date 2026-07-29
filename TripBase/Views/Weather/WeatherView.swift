@@ -102,10 +102,10 @@ struct WeatherView: View {
     private func loadForecasts() async {
         for leg in relevantLegs where forecastsByLegID[leg.id] == nil {
             let legID = leg.id
-            let cityName = leg.cityName
+            let queryName = leg.weatherQueryName
             loadingLegIDs.insert(legID)
-            let result = await APICache.fetch(key: "weather-\(cityName)") {
-                guard let forecast = try await WeatherAPIClient.fetchForecast(cityName: cityName) else {
+            let result = await APICache.fetch(key: "weather-\(queryName)") {
+                guard let forecast = try await WeatherAPIClient.fetchForecast(cityName: queryName) else {
                     throw URLError(.cannotFindHost)
                 }
                 return forecast
@@ -115,8 +115,8 @@ struct WeatherView: View {
                 if result.isStale {
                     staleLegIDs.insert(legID)
                 }
-            } else if (try? await WeatherAPIClient.geocode(cityName: cityName)) == nil {
-                errorsByLegID[legID] = "「\(cityName)」の地名が見つかりませんでした。ローマ字表記（例: Taichung）だと見つかりやすくなります。"
+            } else if (try? await WeatherAPIClient.geocode(cityName: queryName)) == nil {
+                errorsByLegID[legID] = "「\(queryName)」の地名が見つかりませんでした。行程の編集画面で「天気検索用の都市名」にローマ字表記（例: Taichung）を登録すると見つかりやすくなります。"
             } else {
                 errorsByLegID[legID] = "オフラインか、天気を取得できませんでした。"
             }

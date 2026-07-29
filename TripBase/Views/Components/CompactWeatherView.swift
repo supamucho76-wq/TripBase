@@ -47,16 +47,16 @@ struct CompactWeatherView: View {
                     .foregroundStyle(.secondary)
             }
         }
-        .task(id: leg.cityName) {
+        .task(id: leg.weatherQueryName) {
             await load()
         }
     }
 
     private func load() async {
         isLoading = true
-        let cityName = leg.cityName
-        let result = await APICache.fetch(key: "weather-\(cityName)") {
-            guard let forecast = try await WeatherAPIClient.fetchForecast(cityName: cityName) else {
+        let queryName = leg.weatherQueryName
+        let result = await APICache.fetch(key: "weather-\(queryName)") {
+            guard let forecast = try await WeatherAPIClient.fetchForecast(cityName: queryName) else {
                 throw URLError(.cannotFindHost)
             }
             return forecast
@@ -65,7 +65,7 @@ struct CompactWeatherView: View {
             forecast = value
             isStale = result.isStale
         } else {
-            errorMessage = "天気を取得できませんでした"
+            errorMessage = "「\(queryName)」の天気を取得できませんでした"
         }
         isLoading = false
     }
