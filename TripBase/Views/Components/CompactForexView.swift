@@ -3,7 +3,7 @@ import SwiftUI
 struct CompactForexView: View {
     let leg: TripLeg
 
-    @State private var rate: Double?
+    @State private var forexRate: ForexRate?
     @State private var isStale = false
     @State private var errorMessage: String?
 
@@ -18,11 +18,11 @@ struct CompactForexView: View {
                     Label("為替（1万円）", systemImage: "yensign.circle")
                         .font(.caption.bold())
                         .foregroundStyle(.secondary)
-                    if let rate {
-                        Text("\((10_000 * rate).formatted(.number.precision(.fractionLength(0...2)))) \(targetCurrencyCode)")
+                    if let forexRate {
+                        Text("\((10_000 * forexRate.rate).formatted(.number.precision(.fractionLength(0...2)))) \(targetCurrencyCode)")
                             .font(.title3.bold())
-                        if isStale {
-                            Text("オフライン — 前回取得時点")
+                        if !forexRate.asOfDate.isEmpty {
+                            Text(isStale ? "オフライン — \(forexRate.asOfDate)時点" : "\(forexRate.asOfDate)時点の基準レート")
                                 .font(.caption2)
                                 .foregroundStyle(.secondary)
                         }
@@ -46,7 +46,7 @@ struct CompactForexView: View {
             try await ForexAPIClient.fetchRate(to: targetCurrencyCode)
         }
         if let value = result.value {
-            rate = value
+            forexRate = value
             isStale = result.isStale
         } else {
             errorMessage = "為替レートを取得できませんでした"

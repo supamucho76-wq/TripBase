@@ -63,18 +63,37 @@ struct PackingHomeView: View {
     }
 
     private func packingList(for trip: Trip) -> some View {
-        List {
+        let percent = PackingService.percentComplete(trip.packingItems)
+        let checkedCount = trip.packingItems.filter(\.isChecked).count
+        let remainingCount = trip.packingItems.count - checkedCount
+        let isUrgent = PackingService.isUrgent(trip: trip)
+
+        return List {
             Section {
-                VStack(alignment: .leading, spacing: 8) {
+                VStack(spacing: 10) {
                     Text(trip.name)
                         .font(.headline)
-                    ProgressView(value: PackingService.percentComplete(trip.packingItems))
-                        .tint(AppTheme.accent)
-                    Text("持ち物 \(trip.packingItems.filter(\.isChecked).count)/\(trip.packingItems.count)完了")
-                        .font(.caption)
-                        .foregroundStyle(.secondary)
+                    if !trip.packingItems.isEmpty {
+                        CircularProgressRing(progress: percent)
+                        Text(percent >= 1 ? "準備完了！" : "残り\(remainingCount)件")
+                            .font(.subheadline.bold())
+                            .foregroundStyle(percent >= 1 ? AppTheme.accent : .secondary)
+                        if percent >= 1 {
+                            Label("すべて準備できました", systemImage: "party.popper.fill")
+                                .font(.footnote.bold())
+                                .foregroundStyle(AppTheme.accent)
+                                .transition(.scale.combined(with: .opacity))
+                        }
+                        if isUrgent && remainingCount > 0 {
+                            Label("出発が近づいています。残り\(remainingCount)件を確認してください", systemImage: "exclamationmark.triangle.fill")
+                                .font(.caption.bold())
+                                .foregroundStyle(AppTheme.danger)
+                        }
+                    }
                 }
-                .padding(.vertical, 4)
+                .frame(maxWidth: .infinity)
+                .padding(.vertical, 8)
+                .animation(.spring(response: 0.45, dampingFraction: 0.7), value: percent >= 1)
             }
 
             if trip.packingItems.isEmpty {
@@ -88,16 +107,16 @@ struct PackingHomeView: View {
             }
 
             ForEach(groupedItems(for: trip), id: \.category) { group in
-                Section(group.category.title) {
+                Section {
                     ForEach(group.items) { item in
                         Button {
                             toggle(item)
                         } label: {
                             HStack {
                                 Image(systemName: item.isChecked ? "checkmark.circle.fill" : "circle")
-                                    .foregroundStyle(item.isChecked ? AppTheme.accent : .secondary)
+                                    .foregroundStyle(item.isChecked ? AppTheme.accent : (isUrgent ? AppTheme.danger : .secondary))
                                 Text(item.name)
-                                    .foregroundStyle(.primary)
+                                    .foregroundStyle(item.isChecked ? .primary : (isUrgent ? AppTheme.danger : .primary))
                                     .strikethrough(item.isChecked)
                                 Spacer()
                             }
@@ -106,6 +125,8 @@ struct PackingHomeView: View {
                     .onDelete { offsets in
                         delete(offsets, in: group.items)
                     }
+                } header: {
+                    categoryHeader(group: group)
                 }
             }
 
@@ -129,6 +150,16 @@ struct PackingHomeView: View {
             }
         }
         .listStyle(.insetGrouped)
+    }
+
+    private func categoryHeader(group: (category: PackingCategory, items: [PackingItem])) -> some View {
+        let checked = group.items.filter(\.isChecked).count
+        return HStack {
+            Text(group.category.title)
+            Spacer()
+            Text("\(checked)/\(group.items.count)")
+                .foregroundStyle(checked == group.items.count ? AppTheme.accent : .secondary)
+        }
     }
 
     private func toggle(_ item: PackingItem) {

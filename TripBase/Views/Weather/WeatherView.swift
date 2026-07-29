@@ -56,6 +56,18 @@ struct WeatherView: View {
                 }
             }
             if let forecast = forecastsByLegID[leg.id] {
+                if let current = forecast.current {
+                    HStack(spacing: 8) {
+                        Text(WeatherCodeDescription.symbol(for: current.weatherCode))
+                            .font(.title)
+                        Text("\(Int(current.temperature2m.rounded()))°")
+                            .font(.largeTitle.bold())
+                        Text("現在")
+                            .font(.caption2)
+                            .foregroundStyle(.secondary)
+                    }
+                }
+                Divider()
                 forecastRows(forecast)
                 if staleLegIDs.contains(leg.id) {
                     Text("オフライン — 前回取得時点の情報")

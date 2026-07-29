@@ -7,9 +7,14 @@ private struct ForexResponse: Codable {
     let rates: [String: Double]
 }
 
+struct ForexRate: Codable, Equatable, Sendable {
+    let rate: Double
+    let asOfDate: String
+}
+
 enum ForexAPIClient {
-    static func fetchRate(from base: String = "JPY", to target: String) async throws -> Double {
-        guard target != base else { return 1 }
+    static func fetchRate(from base: String = "JPY", to target: String) async throws -> ForexRate {
+        guard target != base else { return ForexRate(rate: 1, asOfDate: "") }
         guard var components = URLComponents(string: "https://api.frankfurter.app/latest") else {
             throw URLError(.badURL)
         }
@@ -24,6 +29,6 @@ enum ForexAPIClient {
         guard let rate = response.rates[target] else {
             throw URLError(.cannotParseResponse)
         }
-        return rate
+        return ForexRate(rate: rate, asOfDate: response.date)
     }
 }

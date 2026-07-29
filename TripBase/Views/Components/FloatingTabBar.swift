@@ -14,7 +14,7 @@ enum TripBaseTab: Int, CaseIterable, Identifiable {
         case .home: "ホーム"
         case .trips: "出張"
         case .packing: "持ち物"
-        case .more: "その他"
+        case .more: "ツール"
         case .settings: "設定"
         }
     }
@@ -24,7 +24,7 @@ enum TripBaseTab: Int, CaseIterable, Identifiable {
         case .home: "house.fill"
         case .trips: "airplane"
         case .packing: "checklist"
-        case .more: "ellipsis.circle.fill"
+        case .more: "wrench.and.screwdriver.fill"
         case .settings: "gearshape.fill"
         }
     }

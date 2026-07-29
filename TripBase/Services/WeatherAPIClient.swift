@@ -1,7 +1,20 @@
 import Foundation
 
 struct WeatherForecast: Codable, Equatable {
+    let current: CurrentWeather?
     let daily: DailyWeather
+
+    struct CurrentWeather: Codable, Equatable {
+        let time: String
+        let temperature2m: Double
+        let weatherCode: Int
+
+        enum CodingKeys: String, CodingKey {
+            case time
+            case temperature2m = "temperature_2m"
+            case weatherCode = "weather_code"
+        }
+    }
 
     struct DailyWeather: Codable, Equatable {
         let time: [String]
@@ -48,6 +61,7 @@ enum WeatherAPIClient {
             URLQueryItem(name: "latitude", value: "\(latitude)"),
             URLQueryItem(name: "longitude", value: "\(longitude)"),
             URLQueryItem(name: "daily", value: "temperature_2m_max,temperature_2m_min,weather_code"),
+            URLQueryItem(name: "current", value: "temperature_2m,weather_code"),
             URLQueryItem(name: "timezone", value: "auto"),
             URLQueryItem(name: "forecast_days", value: "5")
         ]

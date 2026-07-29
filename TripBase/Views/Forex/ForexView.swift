@@ -5,7 +5,7 @@ struct ForexView: View {
     @Query(sort: \Trip.createdAt) private var trips: [Trip]
 
     @State private var amountText = "10000"
-    @State private var rate: Double?
+    @State private var forexRate: ForexRate?
     @State private var isStale = false
     @State private var errorMessage: String?
     @State private var isLoading = false
@@ -35,14 +35,14 @@ struct ForexView: View {
                     Section(targetCurrencyCode) {
                         if isLoading {
                             ProgressView()
-                        } else if let rate {
-                            Text(convertedAmountText(rate: rate))
+                        } else if let forexRate {
+                            Text(convertedAmountText(rate: forexRate.rate))
                                 .font(.title2.bold())
-                            Text("為替レート: 1 JPY ≒ \(rate, specifier: "%.4f") \(targetCurrencyCode)")
+                            Text("為替レート: 1 JPY ≒ \(forexRate.rate, specifier: "%.4f") \(targetCurrencyCode)")
                                 .font(.footnote)
                                 .foregroundStyle(.secondary)
-                            if isStale {
-                                Text("オフライン — 前回取得時点の情報")
+                            if !forexRate.asOfDate.isEmpty {
+                                Text(isStale ? "オフライン — \(forexRate.asOfDate)時点の情報" : "\(forexRate.asOfDate)時点の基準レート（1日1回更新）")
                                     .font(.caption2)
                                     .foregroundStyle(.secondary)
                             }
@@ -83,7 +83,7 @@ struct ForexView: View {
             try await ForexAPIClient.fetchRate(to: targetCurrencyCode)
         }
         if let value = result.value {
-            rate = value
+            forexRate = value
             isStale = result.isStale
         } else {
             errorMessage = "オフラインか、為替レートを取得できませんでした。"

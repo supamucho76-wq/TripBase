@@ -20,10 +20,21 @@ struct CompactWeatherView: View {
                 }
             }
             if let forecast, let firstIndex = forecast.daily.time.indices.first {
-                HStack(spacing: 6) {
-                    Text(WeatherCodeDescription.symbol(for: forecast.daily.weatherCode[firstIndex]))
-                    Text("\(Int(forecast.daily.temperature2mMin[firstIndex].rounded()))° / \(Int(forecast.daily.temperature2mMax[firstIndex].rounded()))°")
-                        .font(.title3.bold())
+                if let current = forecast.current {
+                    HStack(spacing: 6) {
+                        Text(WeatherCodeDescription.symbol(for: current.weatherCode))
+                        Text("\(Int(current.temperature2m.rounded()))°")
+                            .font(.title3.bold())
+                        Text("(\(Int(forecast.daily.temperature2mMin[firstIndex].rounded()))° / \(Int(forecast.daily.temperature2mMax[firstIndex].rounded()))°)")
+                            .font(.caption2)
+                            .foregroundStyle(.secondary)
+                    }
+                } else {
+                    HStack(spacing: 6) {
+                        Text(WeatherCodeDescription.symbol(for: forecast.daily.weatherCode[firstIndex]))
+                        Text("\(Int(forecast.daily.temperature2mMin[firstIndex].rounded()))° / \(Int(forecast.daily.temperature2mMax[firstIndex].rounded()))°")
+                            .font(.title3.bold())
+                    }
                 }
                 if isStale {
                     Text("オフライン — 前回取得時点")

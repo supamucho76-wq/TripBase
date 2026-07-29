@@ -7,6 +7,17 @@ enum PackingService {
         return Double(checkedCount) / Double(items.count)
     }
 
+    static func isUrgent(trip: Trip, now: Date = .now) -> Bool {
+        guard let firstArrival = trip.legs.map(\.arrivalDate).min() else { return false }
+        let calendar = Calendar.current
+        let daysUntil = calendar.dateComponents(
+            [.day],
+            from: calendar.startOfDay(for: now),
+            to: calendar.startOfDay(for: firstArrival)
+        ).day ?? Int.max
+        return daysUntil >= 0 && daysUntil <= 1
+    }
+
     enum QuickTemplate: String, CaseIterable, Identifiable {
         case domestic
         case international
