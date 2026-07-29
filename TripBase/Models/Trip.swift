@@ -1,6 +1,11 @@
 import Foundation
 import SwiftData
 
+enum TripType {
+    case domestic
+    case international
+}
+
 @Model
 final class Trip {
     var id: UUID
@@ -13,6 +18,16 @@ final class Trip {
 
     @Relationship(deleteRule: .cascade, inverse: \TripLeg.trip)
     var legs: [TripLeg]
+
+    static let homeCountryCodeKey = "homeCountryCode"
+
+    /// Computed from the itinerary rather than stored, so it can never
+    /// contradict the legs actually entered. `nil` when there's no itinerary yet.
+    var tripType: TripType? {
+        guard !legs.isEmpty else { return nil }
+        let homeCode = UserDefaults.standard.string(forKey: Trip.homeCountryCodeKey) ?? "JP"
+        return legs.allSatisfy { $0.countryCode == homeCode } ? .domestic : .international
+    }
 
     init(
         id: UUID = UUID(),

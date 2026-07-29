@@ -1,31 +1,113 @@
 import SwiftData
 import SwiftUI
 
+enum TripStatusFilter: String, CaseIterable, Identifiable {
+    case all
+    case inProgress
+    case upcoming
+    case completed
+
+    var id: String { rawValue }
+
+    var title: String {
+        switch self {
+        case .all: "すべて"
+        case .inProgress: "進行中"
+        case .upcoming: "予定"
+        case .completed: "完了"
+        }
+    }
+}
+
+enum TripRegionFilter: String, CaseIterable, Identifiable {
+    case all
+    case domestic
+    case international
+
+    var id: String { rawValue }
+
+    var title: String {
+        switch self {
+        case .all: "すべて"
+        case .domestic: "国内"
+        case .international: "海外"
+        }
+    }
+}
+
 struct TripListView: View {
     @Environment(\.modelContext) private var modelContext
     @Query(sort: \Trip.createdAt, order: .reverse) private var trips: [Trip]
     @State private var isNewTripPresented = false
     @State private var tripPendingDelete: Trip?
+    @State private var statusFilter: TripStatusFilter
+    @State private var regionFilter: TripRegionFilter = .all
+
+    init(initialStatusFilter: TripStatusFilter = .all) {
+        _statusFilter = State(initialValue: initialStatusFilter)
+    }
+
+    private var filteredTrips: [Trip] {
+        trips.filter { trip in
+            statusMatches(trip) && regionMatches(trip)
+        }
+    }
+
+    private func statusMatches(_ trip: Trip) -> Bool {
+        switch statusFilter {
+        case .all: true
+        case .inProgress: TripStatusService.phase(of: trip) == .inProgress
+        case .upcoming: TripStatusService.phase(of: trip) == .upcoming
+        case .completed: TripStatusService.phase(of: trip) == .completed
+        }
+    }
+
+    private func regionMatches(_ trip: Trip) -> Bool {
+        switch regionFilter {
+        case .all: true
+        case .domestic: trip.tripType == .domestic
+        case .international: trip.tripType == .international
+        }
+    }
 
     var body: some View {
         NavigationStack {
-            Group {
-                if trips.isEmpty {
-                    ContentUnavailableView(
-                        "出張がまだありません",
-                        systemImage: "airplane",
-                        description: Text("右上の + から出張を追加できます。")
-                    )
-                } else {
-                    List(trips) { trip in
-                        NavigationLink(value: trip) {
-                            TripRow(trip: trip)
-                        }
-                        .swipeActions {
-                            Button("削除", role: .destructive) {
-                                tripPendingDelete = trip
+            VStack(spacing: 12) {
+                Picker("ステータス", selection: $statusFilter) {
+                    ForEach(TripStatusFilter.allCases) { filter in
+                        Text(filter.title).tag(filter)
+                    }
+                }
+                .pickerStyle(.segmented)
+                .padding(.horizontal)
+
+                Picker("地域", selection: $regionFilter) {
+                    ForEach(TripRegionFilter.allCases) { filter in
+                        Text(filter.title).tag(filter)
+                    }
+                }
+                .pickerStyle(.segmented)
+                .padding(.horizontal)
+
+                Group {
+                    if filteredTrips.isEmpty {
+                        ContentUnavailableView(
+                            trips.isEmpty ? "出張がまだありません" : "該当する出張がありません",
+                            systemImage: "airplane",
+                            description: Text(trips.isEmpty ? "右上の + から出張を追加できます。" : "フィルタ条件を変えてみてください。")
+                        )
+                    } else {
+                        List(filteredTrips) { trip in
+                            NavigationLink(value: trip) {
+                                TripRow(trip: trip)
+                            }
+                            .swipeActions {
+                                Button("削除", role: .destructive) {
+                                    tripPendingDelete = trip
+                                }
                             }
                         }
+                        .listStyle(.plain)
                     }
                 }
             }
@@ -79,20 +161,51 @@ private struct TripRow: View {
         trip.legs.sorted { $0.orderIndex < $1.orderIndex }
     }
 
+    private var phase: TripPhase {
+        TripStatusService.phase(of: trip)
+    }
+
+    private var phaseBadgeColor: Color {
+        switch phase {
+        case .noItinerary: .secondary
+        case .upcoming: AppTheme.accent
+        case .inProgress: AppTheme.accent
+        case .completed: .secondary
+        }
+    }
+
+    private var phaseTitle: String {
+        switch phase {
+        case .noItinerary: "未設定"
+        case .upcoming: "予定"
+        case .inProgress: "進行中"
+        case .completed: "完了"
+        }
+    }
+
     var body: some View {
         VStack(alignment: .leading, spacing: 6) {
-            Text(trip.name)
-                .font(.headline)
+            HStack {
+                Text(trip.name)
+                    .font(.headline)
+                Spacer()
+                StatusBadge(title: phaseTitle, color: phaseBadgeColor)
+            }
             if let first = sortedLegs.first, let last = sortedLegs.last {
-                Text("\(AppDateFormatter.date.string(from: first.arrivalDate)) 〜 \(AppDateFormatter.date.string(from: last.departureDate))")
-                    .font(.subheadline)
-                    .foregroundStyle(.secondary)
+                HStack(spacing: 6) {
+                    Text("\(AppDateFormatter.date.string(from: first.arrivalDate)) 〜 \(AppDateFormatter.date.string(from: last.departureDate))")
+                    if let tripType = trip.tripType {
+                        Text(tripType == .domestic ? "・国内" : "・海外")
+                    }
+                }
+                .font(.subheadline)
+                .foregroundStyle(.secondary)
             } else {
                 Text("行程未登録")
                     .font(.subheadline)
                     .foregroundStyle(.secondary)
             }
-            Text("\(sortedLegs.count)行程")
+            Text("行程\(sortedLegs.count)件")
                 .font(.caption)
                 .foregroundStyle(.secondary)
         }
