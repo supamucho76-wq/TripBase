@@ -22,7 +22,7 @@ final class TripLeg {
     var trip: Trip?
 
     @Relationship(deleteRule: .cascade, inverse: \LocalPlace.tripLeg)
-    var localPlaces: [LocalPlace]
+    var localPlaces: [LocalPlace] = []
 
     var visaStatus: VisaStatus {
         get { VisaStatus(rawValue: visaStatusRawValue) ?? .notRequired }

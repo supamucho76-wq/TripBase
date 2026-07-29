@@ -10,8 +10,8 @@ enum TripType {
 final class Trip {
     var id: UUID
     var name: String
-    var purpose: String
-    var baseCurrencyCode: String
+    var purpose: String = ""
+    var baseCurrencyCode: String = "JPY"
     var notes: String
     var createdAt: Date
     var updatedAt: Date
@@ -20,7 +20,7 @@ final class Trip {
     var legs: [TripLeg]
 
     @Relationship(deleteRule: .cascade, inverse: \PackingItem.trip)
-    var packingItems: [PackingItem]
+    var packingItems: [PackingItem] = []
 
     static let homeCountryCodeKey = "homeCountryCode"
 
