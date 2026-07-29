@@ -31,7 +31,8 @@ enum WeatherAPIClient {
         var components = URLComponents(string: "https://geocoding-api.open-meteo.com/v1/search")!
         components.queryItems = [
             URLQueryItem(name: "name", value: cityName),
-            URLQueryItem(name: "count", value: "1")
+            URLQueryItem(name: "count", value: "1"),
+            URLQueryItem(name: "language", value: "ja")
         ]
         guard let url = components.url else { throw URLError(.badURL) }
 

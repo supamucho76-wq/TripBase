@@ -45,12 +45,15 @@ struct TripLegEditorView: View {
         NavigationStack {
             Form {
                 Section("目的地") {
+                    Picker("国", selection: $countryCode) {
+                        Text("選択してください").tag("")
+                        ForEach(CountryInfoStore.allSorted) { info in
+                            Text("\(info.nameJa)（\(info.countryCode)）").tag(info.countryCode)
+                        }
+                    }
+                    .accessibilityIdentifier("leg.countryCode")
                     TextField("都市名（必須）", text: $cityName)
                         .accessibilityIdentifier("leg.city")
-                    TextField("国コード（例: JP, US, FR）", text: $countryCode)
-                        .textInputAutocapitalization(.characters)
-                        .autocorrectionDisabled()
-                        .accessibilityIdentifier("leg.countryCode")
                     DatePicker("到着日", selection: $arrivalDate, displayedComponents: .date)
                     DatePicker("出発日", selection: $departureDate, displayedComponents: .date)
                 }

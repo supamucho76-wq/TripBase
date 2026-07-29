@@ -26,11 +26,14 @@ final class TripBaseUITests: XCTestCase {
         app.staticTexts["台湾出張"].tap()
 
         app.buttons["trip.leg.add"].tap()
+        XCTAssertTrue(app.buttons["leg.countryCode"].waitForExistence(timeout: 8))
+        app.buttons["leg.countryCode"].tap()
+        XCTAssertTrue(app.staticTexts["台湾（TW）"].waitForExistence(timeout: 8))
+        app.staticTexts["台湾（TW）"].tap()
+
         XCTAssertTrue(app.textFields["leg.city"].waitForExistence(timeout: 8))
         app.textFields["leg.city"].tap()
         app.textFields["leg.city"].typeText("台北")
-        app.textFields["leg.countryCode"].tap()
-        app.textFields["leg.countryCode"].typeText("TW")
         scrollToButton("leg.save").tap()
 
         XCTAssertTrue(app.staticTexts["台北"].waitForExistence(timeout: 8))

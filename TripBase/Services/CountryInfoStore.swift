@@ -13,6 +13,10 @@ enum CountryInfoStore {
         return Dictionary(uniqueKeysWithValues: list.map { ($0.countryCode, $0) })
     }()
 
+    static var allSorted: [CountryInfo] {
+        all.values.sorted { $0.nameJa.localizedStandardCompare($1.nameJa) == .orderedAscending }
+    }
+
     static func lookup(_ countryCode: String) -> CountryInfo? {
         all[countryCode.uppercased()]
     }

@@ -104,6 +104,8 @@ struct WeatherView: View {
                 if result.isStale {
                     staleLegIDs.insert(legID)
                 }
+            } else if (try? await WeatherAPIClient.geocode(cityName: cityName)) == nil {
+                errorsByLegID[legID] = "「\(cityName)」の地名が見つかりませんでした。ローマ字表記（例: Taichung）だと見つかりやすくなります。"
             } else {
                 errorsByLegID[legID] = "オフラインか、天気を取得できませんでした。"
             }
