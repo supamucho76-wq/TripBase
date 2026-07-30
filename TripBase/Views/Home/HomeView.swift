@@ -183,6 +183,13 @@ struct HomeView: View {
                 actionRowLabel(item: item)
             }
             .buttonStyle(.plain)
+        case .navigate where item.id == "hotel" && item.isDone:
+            NavigationLink {
+                DestinationInfoView(leg: leg)
+            } label: {
+                actionRowLabel(item: item)
+            }
+            .buttonStyle(.plain)
         case .navigate where item.id == "hotel" || item.id == "visa":
             Button {
                 isEditLegPresented = true
