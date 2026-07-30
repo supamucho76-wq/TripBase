@@ -47,9 +47,17 @@ struct ForexView: View {
                                     .foregroundStyle(.secondary)
                             }
                         } else if let errorMessage {
-                            Text(errorMessage)
-                                .font(.footnote)
-                                .foregroundStyle(.secondary)
+                            VStack(alignment: .leading, spacing: 8) {
+                                Text(errorMessage)
+                                    .font(.footnote)
+                                    .foregroundStyle(.secondary)
+                                Button {
+                                    Task { await loadRate() }
+                                } label: {
+                                    Label("再試行", systemImage: "arrow.clockwise")
+                                        .font(.footnote.bold())
+                                }
+                            }
                         }
                     }
                 }
@@ -64,6 +72,16 @@ struct ForexView: View {
         .contentMargins(.bottom, 90, for: .scrollContent)
         .navigationTitle("為替")
         .navigationBarTitleDisplayMode(.inline)
+        .toolbar {
+            ToolbarItem(placement: .primaryAction) {
+                Button {
+                    Task { await loadRate() }
+                } label: {
+                    Label("更新", systemImage: "arrow.clockwise")
+                }
+                .accessibilityLabel("為替レートを更新する")
+            }
+        }
         .task(id: targetCurrencyCode) {
             await loadRate()
         }

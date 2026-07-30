@@ -8,6 +8,7 @@ struct WeatherView: View {
     @State private var staleLegIDs: Set<UUID> = []
     @State private var errorsByLegID: [UUID: String] = [:]
     @State private var loadingLegIDs: Set<UUID> = []
+    @State private var fetchedAtByLegID: [UUID: Date] = [:]
 
     private var allLegs: [TripLeg] {
         trips.flatMap(\.legs)
@@ -42,6 +43,16 @@ struct WeatherView: View {
         .background(AppTheme.background)
         .navigationTitle("天気")
         .navigationBarTitleDisplayMode(.inline)
+        .toolbar {
+            ToolbarItem(placement: .primaryAction) {
+                Button {
+                    Task { await loadForecasts(force: true) }
+                } label: {
+                    Label("更新", systemImage: "arrow.clockwise")
+                }
+                .accessibilityLabel("天気を更新する")
+            }
+        }
         .task(id: relevantLegs.map(\.id)) {
             await loadForecasts()
         }
@@ -75,11 +86,23 @@ struct WeatherView: View {
                     Text("オフライン — 前回取得時点の情報")
                         .font(.caption2)
                         .foregroundStyle(.secondary)
+                } else if let fetchedAt = fetchedAtByLegID[leg.id] {
+                    Text("最終更新: \(fetchedAt.formatted(date: .omitted, time: .shortened))")
+                        .font(.caption2)
+                        .foregroundStyle(.secondary)
                 }
             } else if let errorMessage = errorsByLegID[leg.id] {
-                Text(errorMessage)
-                    .font(.footnote)
-                    .foregroundStyle(.secondary)
+                VStack(alignment: .leading, spacing: 8) {
+                    Text(errorMessage)
+                        .font(.footnote)
+                        .foregroundStyle(.secondary)
+                    Button {
+                        Task { await loadForecast(for: leg, force: true) }
+                    } label: {
+                        Label("再試行", systemImage: "arrow.clockwise")
+                            .font(.footnote.bold())
+                    }
+                }
             }
         }
         .frame(maxWidth: .infinity, alignment: .leading)
@@ -100,29 +123,39 @@ struct WeatherView: View {
         }
     }
 
-    private func loadForecasts() async {
-        for leg in relevantLegs where forecastsByLegID[leg.id] == nil {
-            let legID = leg.id
-            let queryName = leg.weatherQueryName
-            loadingLegIDs.insert(legID)
-            let result = await APICache.fetch(key: "weather-\(queryName)") {
-                guard let forecast = try await WeatherAPIClient.fetchForecast(cityName: queryName) else {
-                    throw URLError(.cannotFindHost)
-                }
-                return forecast
-            }
-            if let forecast = result.value {
-                forecastsByLegID[legID] = forecast
-                if result.isStale {
-                    staleLegIDs.insert(legID)
-                }
-            } else if (try? await WeatherAPIClient.geocode(cityName: queryName)) == nil {
-                errorsByLegID[legID] = "「\(queryName)」の地名が見つかりませんでした。行程の編集画面で「天気検索用の都市名」にローマ字表記（例: Taichung）を登録すると見つかりやすくなります。"
-            } else {
-                errorsByLegID[legID] = "オフラインか、天気を取得できませんでした。"
-            }
-            loadingLegIDs.remove(legID)
+    private func loadForecasts(force: Bool = false) async {
+        for leg in relevantLegs where force || forecastsByLegID[leg.id] == nil {
+            await loadForecast(for: leg, force: force)
         }
+    }
+
+    private func loadForecast(for leg: TripLeg, force: Bool) async {
+        let legID = leg.id
+        let queryName = leg.weatherQueryName
+        loadingLegIDs.insert(legID)
+        errorsByLegID[legID] = nil
+        staleLegIDs.remove(legID)
+
+        let result = await APICache.fetch(key: "weather-\(queryName)") {
+            guard let forecast = try await WeatherAPIClient.fetchForecast(cityName: queryName) else {
+                throw URLError(.cannotFindHost)
+            }
+            return forecast
+        }
+        if let forecast = result.value {
+            forecastsByLegID[legID] = forecast
+            if let fetchedAt = result.fetchedAt {
+                fetchedAtByLegID[legID] = fetchedAt
+            }
+            if result.isStale {
+                staleLegIDs.insert(legID)
+            }
+        } else if (try? await WeatherAPIClient.geocode(cityName: queryName)) == nil {
+            errorsByLegID[legID] = "「\(queryName)」の地名が見つかりませんでした。行程の編集画面で「天気検索用の都市名」にローマ字表記（例: Taichung）を登録すると見つかりやすくなります。"
+        } else {
+            errorsByLegID[legID] = "オフラインか、天気を取得できませんでした。"
+        }
+        loadingLegIDs.remove(legID)
     }
 }
 

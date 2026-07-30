@@ -7,6 +7,7 @@ struct PackingHomeView: View {
     @State private var selectedTripID: UUID?
     @State private var newItemName = ""
     @State private var newItemCategory: PackingCategory = .misc
+    @State private var itemsPendingDelete: [PackingItem]?
 
     private var relevantTrips: [Trip] {
         trips.filter {
@@ -133,7 +134,7 @@ struct PackingHomeView: View {
                         .buttonStyle(.plain)
                     }
                     .onDelete { offsets in
-                        delete(offsets, in: group.items)
+                        itemsPendingDelete = offsets.map { group.items[$0] }
                     }
                 } header: {
                     categoryHeader(group: group)
@@ -154,7 +155,10 @@ struct PackingHomeView: View {
                         addItem(to: trip)
                     } label: {
                         Image(systemName: "plus.circle.fill")
+                            .font(.title2)
+                            .frame(minWidth: 44, minHeight: 44)
                     }
+                    .accessibilityLabel("持ち物を追加する")
                     .disabled(newItemName.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty)
                 }
             }
@@ -162,6 +166,27 @@ struct PackingHomeView: View {
         .listStyle(.insetGrouped)
         .listSectionSpacing(.compact)
         .contentMargins(.bottom, 90, for: .scrollContent)
+        .alert(
+            "この持ち物を削除しますか？",
+            isPresented: Binding(
+                get: { itemsPendingDelete != nil },
+                set: { isPresented in
+                    if !isPresented { itemsPendingDelete = nil }
+                }
+            )
+        ) {
+            Button("削除", role: .destructive) {
+                if let items = itemsPendingDelete {
+                    delete(items)
+                }
+                itemsPendingDelete = nil
+            }
+            Button("キャンセル", role: .cancel) {
+                itemsPendingDelete = nil
+            }
+        } message: {
+            Text("削除すると元に戻せません。")
+        }
     }
 
     private func categoryHeader(group: (category: PackingCategory, items: [PackingItem])) -> some View {
@@ -177,6 +202,7 @@ struct PackingHomeView: View {
     private func toggle(_ item: PackingItem) {
         item.isChecked.toggle()
         item.updatedAt = .now
+        HapticsService.lightImpact()
         try? modelContext.save()
     }
 
@@ -202,9 +228,9 @@ struct PackingHomeView: View {
         try? modelContext.save()
     }
 
-    private func delete(_ offsets: IndexSet, in items: [PackingItem]) {
-        for index in offsets {
-            modelContext.delete(items[index])
+    private func delete(_ items: [PackingItem]) {
+        for item in items {
+            modelContext.delete(item)
         }
         try? modelContext.save()
     }

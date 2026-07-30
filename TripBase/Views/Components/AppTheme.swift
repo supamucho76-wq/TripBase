@@ -28,6 +28,24 @@ struct LargeActionButtonStyle: ButtonStyle {
     }
 }
 
+/// For custom tappable cards (NavigationLink/Button wrapping a whole card)
+/// that would otherwise show zero visual feedback under .buttonStyle(.plain).
+/// Dims and slightly shrinks the card while pressed.
+struct PressableCardStyle: ButtonStyle {
+    func makeBody(configuration: Configuration) -> some View {
+        configuration.label
+            .opacity(configuration.isPressed ? 0.75 : 1)
+            .scaleEffect(configuration.isPressed ? 0.98 : 1)
+            .animation(.easeOut(duration: 0.15), value: configuration.isPressed)
+    }
+}
+
+extension View {
+    func pressableCardStyle() -> some View {
+        buttonStyle(PressableCardStyle())
+    }
+}
+
 struct StatusBadge: View {
     let title: String
     let color: Color

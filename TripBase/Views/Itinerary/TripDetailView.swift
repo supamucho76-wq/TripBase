@@ -125,8 +125,10 @@ struct TripDetailView: View {
                                 Image(systemName: "pencil.circle.fill")
                                     .font(.title3)
                                     .foregroundStyle(AppTheme.accent)
+                                    .frame(minWidth: 44, minHeight: 44)
                             }
                             .buttonStyle(.plain)
+                            .accessibilityLabel("\(leg.cityName)の行程を編集")
                         }
                         .swipeActions {
                             Button("削除", role: .destructive) {

@@ -96,7 +96,7 @@ struct HomeView: View {
                 .frame(maxWidth: .infinity, alignment: .leading)
                 .cardStyle(padding: 14)
             }
-            .buttonStyle(.plain)
+            .pressableCardStyle()
 
             NavigationLink {
                 TripListView(initialStatusFilter: .completed)
@@ -111,7 +111,7 @@ struct HomeView: View {
                 .foregroundStyle(.primary)
                 .cardStyle(padding: 14)
             }
-            .buttonStyle(.plain)
+            .pressableCardStyle()
 
             Button {
                 isNewTripPresented = true
@@ -159,32 +159,33 @@ struct HomeView: View {
             Button {
                 let key = HomeActionService.flightCheckinKey(tripID: trip.id, legID: leg.id)
                 UserDefaults.standard.set(true, forKey: key)
+                HapticsService.success()
                 flightCheckinRefreshToken = UUID()
             } label: {
                 nextActionLabel(action: action)
             }
-            .buttonStyle(.plain)
+            .pressableCardStyle()
         case (_, "hotel"), (_, "visa"), (_, "transport"):
             Button {
                 isEditLegPresented = true
             } label: {
                 nextActionLabel(action: action)
             }
-            .buttonStyle(.plain)
+            .pressableCardStyle()
         case (_, "packing"):
             NavigationLink {
                 PackingHomeView()
             } label: {
                 nextActionLabel(action: action)
             }
-            .buttonStyle(.plain)
+            .pressableCardStyle()
         default:
             NavigationLink {
                 TripDetailView(trip: trip)
             } label: {
                 nextActionLabel(action: action)
             }
-            .buttonStyle(.plain)
+            .pressableCardStyle()
         }
     }
 
@@ -284,32 +285,33 @@ struct HomeView: View {
             Button {
                 let key = HomeActionService.flightCheckinKey(tripID: trip.id, legID: leg.id)
                 UserDefaults.standard.set(!item.isDone, forKey: key)
+                HapticsService.lightImpact()
                 flightCheckinRefreshToken = UUID()
             } label: {
                 actionRowLabel(item: item)
             }
-            .buttonStyle(.plain)
+            .pressableCardStyle()
         case .navigate where item.id == "hotel" && item.isDone:
             NavigationLink {
                 DestinationInfoView(leg: leg)
             } label: {
                 actionRowLabel(item: item)
             }
-            .buttonStyle(.plain)
+            .pressableCardStyle()
         case .navigate where item.id == "hotel" || item.id == "visa" || item.id == "transport":
             Button {
                 isEditLegPresented = true
             } label: {
                 actionRowLabel(item: item)
             }
-            .buttonStyle(.plain)
+            .pressableCardStyle()
         case .navigate:
             NavigationLink {
                 destination(for: item, leg: leg)
             } label: {
                 actionRowLabel(item: item)
             }
-            .buttonStyle(.plain)
+            .pressableCardStyle()
         }
     }
 
@@ -401,7 +403,7 @@ struct HomeView: View {
             .clipShape(RoundedRectangle(cornerRadius: AppTheme.cardCornerRadius, style: .continuous))
             .shadow(color: AppTheme.cardShadowColor, radius: AppTheme.cardShadowRadius, y: AppTheme.cardShadowY)
         }
-        .buttonStyle(.plain)
+        .pressableCardStyle()
     }
 
     private func todayScheduleCard(trip: Trip, leg: TripLeg) -> some View {
@@ -441,7 +443,7 @@ struct HomeView: View {
             .frame(maxWidth: .infinity, alignment: .leading)
             .cardStyle(padding: 14)
         }
-        .buttonStyle(.plain)
+        .pressableCardStyle()
     }
 
     private func contextInfoCard(leg: TripLeg) -> some View {
@@ -453,7 +455,7 @@ struct HomeView: View {
                     CompactTimezoneView(leg: leg)
                         .frame(maxWidth: .infinity, alignment: .leading)
                 }
-                .buttonStyle(.plain)
+                .pressableCardStyle()
 
                 NavigationLink {
                     WeatherView()
@@ -461,7 +463,7 @@ struct HomeView: View {
                     CompactWeatherView(leg: leg)
                         .frame(maxWidth: .infinity, alignment: .leading)
                 }
-                .buttonStyle(.plain)
+                .pressableCardStyle()
             }
             Divider()
             NavigationLink {
@@ -470,7 +472,7 @@ struct HomeView: View {
                 CompactForexView(leg: leg)
                     .frame(maxWidth: .infinity, alignment: .leading)
             }
-            .buttonStyle(.plain)
+            .pressableCardStyle()
         }
         .cardStyle(padding: 14)
     }
@@ -496,7 +498,7 @@ struct HomeView: View {
             .frame(maxWidth: .infinity, alignment: .leading)
             .cardStyle(padding: 14)
         }
-        .buttonStyle(.plain)
+        .pressableCardStyle()
     }
 
     private func quickActionsCard(trip: Trip, leg: TripLeg) -> some View {
@@ -526,7 +528,7 @@ struct HomeView: View {
         }
         .frame(maxWidth: .infinity, alignment: .leading)
         .cardStyle(padding: 14)
-        .buttonStyle(.plain)
+        .pressableCardStyle()
     }
 
     private func quickActionLabel(_ title: String, systemImage: String) -> some View {

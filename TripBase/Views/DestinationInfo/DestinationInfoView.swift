@@ -10,6 +10,7 @@ struct DestinationInfoView: View {
     @State private var isLoadingHolidays = false
     @State private var isHolidaysStale = false
     @State private var isAddPlacePresented = false
+    @State private var placePendingDelete: LocalPlace?
 
     private var countryInfo: CountryInfo? {
         CountryInfoStore.lookup(leg.countryCode)
@@ -53,6 +54,27 @@ struct DestinationInfoView: View {
         .sheet(isPresented: $isAddPlacePresented) {
             LocalPlaceEditorView(leg: leg)
         }
+        .alert(
+            "この場所を削除しますか？",
+            isPresented: Binding(
+                get: { placePendingDelete != nil },
+                set: { isPresented in
+                    if !isPresented { placePendingDelete = nil }
+                }
+            )
+        ) {
+            Button("削除", role: .destructive) {
+                if let place = placePendingDelete {
+                    modelContext.delete(place)
+                }
+                placePendingDelete = nil
+            }
+            Button("キャンセル", role: .cancel) {
+                placePendingDelete = nil
+            }
+        } message: {
+            Text("削除すると元に戻せません。")
+        }
     }
 
     private func mapsURL(for address: String) -> URL? {
@@ -82,11 +104,7 @@ struct DestinationInfoView: View {
                     }
                     HStack(spacing: 16) {
                         if !leg.hotelAddress.isEmpty {
-                            Button {
-                                UIPasteboard.general.string = leg.hotelAddress
-                            } label: {
-                                Label("住所をコピー", systemImage: "doc.on.doc")
-                            }
+                            CopyButton(text: leg.hotelAddress, label: "住所をコピー", systemImage: "doc.on.doc")
                             if let url = mapsURL(for: leg.hotelAddress) {
                                 Link(destination: url) {
                                     Label("地図で開く", systemImage: "map")
@@ -94,11 +112,7 @@ struct DestinationInfoView: View {
                             }
                         }
                         if !leg.hotelBookingReference.isEmpty {
-                            Button {
-                                UIPasteboard.general.string = leg.hotelBookingReference
-                            } label: {
-                                Label("予約番号をコピー", systemImage: "number")
-                            }
+                            CopyButton(text: leg.hotelBookingReference, label: "予約番号をコピー", systemImage: "number")
                         }
                     }
                     .font(.footnote)
@@ -119,7 +133,10 @@ struct DestinationInfoView: View {
                     isAddPlacePresented = true
                 } label: {
                     Image(systemName: "plus.circle.fill")
+                        .font(.title3)
+                        .frame(minWidth: 44, minHeight: 44)
                 }
+                .accessibilityLabel("よく使う場所を追加する")
             }
             if sortedPlaces.isEmpty {
                 Text("勤務先・空港・タクシー行き先・病院・コンビニなどを登録しておくと、出張中すぐに呼び出せます。")
@@ -155,11 +172,7 @@ struct DestinationInfoView: View {
             }
             HStack(spacing: 16) {
                 if !place.address.isEmpty {
-                    Button {
-                        UIPasteboard.general.string = place.address
-                    } label: {
-                        Label("住所をコピー", systemImage: "doc.on.doc")
-                    }
+                    CopyButton(text: place.address, label: "住所をコピー", systemImage: "doc.on.doc")
                     if let url = mapsURL(for: place.address) {
                         Link(destination: url) {
                             Label("地図で開く", systemImage: "map")
@@ -173,10 +186,12 @@ struct DestinationInfoView: View {
                 }
                 Spacer()
                 Button(role: .destructive) {
-                    modelContext.delete(place)
+                    placePendingDelete = place
                 } label: {
                     Image(systemName: "trash")
+                        .frame(minWidth: 44, minHeight: 44)
                 }
+                .accessibilityLabel("\(place.name)を削除")
             }
             .font(.footnote)
         }
@@ -209,9 +224,17 @@ struct DestinationInfoView: View {
                         .foregroundStyle(.secondary)
                 }
             } else if let holidaysErrorMessage {
-                Text(holidaysErrorMessage)
-                    .font(.footnote)
-                    .foregroundStyle(.secondary)
+                VStack(alignment: .leading, spacing: 8) {
+                    Text(holidaysErrorMessage)
+                        .font(.footnote)
+                        .foregroundStyle(.secondary)
+                    Button {
+                        Task { await loadHolidays() }
+                    } label: {
+                        Label("再試行", systemImage: "arrow.clockwise")
+                            .font(.footnote.bold())
+                    }
+                }
             } else if !isLoadingHolidays {
                 Text("今年の祝日データはありません。")
                     .font(.footnote)

@@ -42,7 +42,7 @@ struct MoreView: View {
                             toolTile(title: "現地情報", systemImage: "mappin.and.ellipse")
                         }
                     }
-                    .buttonStyle(.plain)
+                    .pressableCardStyle()
 
                     NavigationLink {
                         ContentUnavailableView(
@@ -55,7 +55,7 @@ struct MoreView: View {
                     } label: {
                         comingSoonTile(title: "翻訳", systemImage: "text.bubble")
                     }
-                    .buttonStyle(.plain)
+                    .pressableCardStyle()
 
                     VStack(alignment: .leading, spacing: 8) {
                         Text("管理")
@@ -76,7 +76,7 @@ struct MoreView: View {
                             .frame(maxWidth: .infinity, alignment: .leading)
                             .cardStyle(padding: 0)
                         }
-                        .buttonStyle(.plain)
+                        .pressableCardStyle()
                     }
                 }
                 .padding()
