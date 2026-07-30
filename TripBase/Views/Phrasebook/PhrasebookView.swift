@@ -1,7 +1,6 @@
 import SwiftUI
 
 struct PhrasebookView: View {
-    @State private var selectedCategory: PhraseCategory?
     @State private var favoritesVersion = UUID()
 
     private var favoritePhrases: [Phrase] {
