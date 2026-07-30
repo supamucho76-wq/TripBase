@@ -16,7 +16,8 @@ struct TripBaseApp: App {
             Trip.self,
             TripLeg.self,
             PackingItem.self,
-            LocalPlace.self
+            LocalPlace.self,
+            TripDocument.self
         ])
         let configuration = ModelConfiguration(
             schema: schema,

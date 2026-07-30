@@ -22,6 +22,9 @@ final class Trip {
     @Relationship(deleteRule: .cascade, inverse: \PackingItem.trip)
     var packingItems: [PackingItem] = []
 
+    @Relationship(deleteRule: .cascade, inverse: \TripDocument.trip)
+    var documents: [TripDocument] = []
+
     static let homeCountryCodeKey = "homeCountryCode"
 
     /// Computed from the itinerary rather than stored, so it can never
@@ -49,5 +52,6 @@ final class Trip {
         self.updatedAt = createdAt
         self.legs = []
         self.packingItems = []
+        self.documents = []
     }
 }

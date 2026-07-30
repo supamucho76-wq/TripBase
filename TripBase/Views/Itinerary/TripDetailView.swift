@@ -35,6 +35,13 @@ struct TripDetailView: View {
         return "\(items.filter(\.isChecked).count)/\(items.count)完了"
     }
 
+    private var documentSummaryText: String {
+        let documents = trip.documents
+        guard !documents.isEmpty else { return "未登録" }
+        let unconfirmed = DocumentService.unconfirmedCount(documents)
+        return unconfirmed == 0 ? "確認済み" : "未確認\(unconfirmed)件"
+    }
+
     var body: some View {
         List {
             Section {
@@ -67,15 +74,15 @@ struct TripDetailView: View {
                     }
                 }
                 NavigationLink {
-                    ContentUnavailableView(
-                        "書類機能は準備中です",
-                        systemImage: "doc.text",
-                        description: Text("航空券・ホテル予約・パスポートなどをまとめて保存できるようになります。")
-                    )
-                    .navigationTitle("書類")
-                    .navigationBarTitleDisplayMode(.inline)
+                    TripDocumentListView(trip: trip)
                 } label: {
-                    Label("書類", systemImage: "doc.text")
+                    HStack {
+                        Label("書類", systemImage: "doc.text")
+                        Spacer()
+                        Text(documentSummaryText)
+                            .font(.caption)
+                            .foregroundStyle(.secondary)
+                    }
                 }
             }
 
