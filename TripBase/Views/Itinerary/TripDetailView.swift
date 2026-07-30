@@ -42,6 +42,13 @@ struct TripDetailView: View {
         return unconfirmed == 0 ? "確認済み" : "未確認\(unconfirmed)件"
     }
 
+    private var taskSummaryText: String {
+        let tasks = trip.tasks
+        guard !tasks.isEmpty else { return "未登録" }
+        let remaining = tasks.filter { !$0.isDone }.count
+        return remaining == 0 ? "すべて完了" : "残り\(remaining)件"
+    }
+
     var body: some View {
         List {
             Section {
@@ -88,15 +95,15 @@ struct TripDetailView: View {
 
             Section("タスク・メモ") {
                 NavigationLink {
-                    ContentUnavailableView(
-                        "タスク機能は準備中です",
-                        systemImage: "checkmark.circle",
-                        description: Text("出張前後にやることをリストで管理できるようになります。")
-                    )
-                    .navigationTitle("タスク")
-                    .navigationBarTitleDisplayMode(.inline)
+                    TripTaskListView(trip: trip)
                 } label: {
-                    Label("タスク", systemImage: "checkmark.circle")
+                    HStack {
+                        Label("タスク", systemImage: "checkmark.circle")
+                        Spacer()
+                        Text(taskSummaryText)
+                            .font(.caption)
+                            .foregroundStyle(.secondary)
+                    }
                 }
                 NavigationLink {
                     ContentUnavailableView(

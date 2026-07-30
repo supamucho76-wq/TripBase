@@ -65,6 +65,20 @@ enum HomeActionService {
             )
         }
 
+        let beforeTripTasks = trip.tasks.filter { $0.phase == .beforeTrip }
+        if !beforeTripTasks.isEmpty {
+            let remaining = beforeTripTasks.filter { !$0.isDone }.count
+            items.append(
+                HomeActionItem(
+                    id: "tasks",
+                    title: remaining == 0 ? "出張前タスク 完了" : "出張前タスクが残り\(remaining)件あります",
+                    systemImage: "checkmark.circle",
+                    isDone: remaining == 0,
+                    kind: .navigate
+                )
+            )
+        }
+
         if shouldShowFlightCheckin(leg: leg, now: now) {
             items.append(
                 HomeActionItem(id: "flight-checkin", title: "フライトチェックイン", systemImage: "airplane", isDone: flightCheckinDone, kind: .toggle)
@@ -108,6 +122,14 @@ enum HomeActionService {
             let remaining = packingItems.filter { !$0.isChecked }.count
             if remaining > 0 {
                 return HomeActionItem(id: "packing", title: "持ち物が残り\(remaining)件あります", systemImage: "checklist", isDone: false, kind: .navigate)
+            }
+        }
+
+        let beforeTripTasks = trip.tasks.filter { $0.phase == .beforeTrip }
+        if !beforeTripTasks.isEmpty {
+            let remaining = beforeTripTasks.filter { !$0.isDone }.count
+            if remaining > 0 {
+                return HomeActionItem(id: "tasks", title: "出張前タスクが残り\(remaining)件あります", systemImage: "checkmark.circle", isDone: false, kind: .navigate)
             }
         }
 

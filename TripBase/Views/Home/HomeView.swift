@@ -204,6 +204,13 @@ struct HomeView: View {
                 nextActionLabel(action: action)
             }
             .pressableCardStyle()
+        case (_, "tasks"):
+            NavigationLink {
+                TripTaskListView(trip: trip)
+            } label: {
+                nextActionLabel(action: action)
+            }
+            .pressableCardStyle()
         default:
             NavigationLink {
                 TripDetailView(trip: trip)
@@ -332,7 +339,7 @@ struct HomeView: View {
             .pressableCardStyle()
         case .navigate:
             NavigationLink {
-                destination(for: item, leg: leg)
+                destination(for: item, trip: trip, leg: leg)
             } label: {
                 actionRowLabel(item: item)
             }
@@ -365,10 +372,12 @@ struct HomeView: View {
     }
 
     @ViewBuilder
-    private func destination(for item: HomeActionItem, leg: TripLeg) -> some View {
+    private func destination(for item: HomeActionItem, trip: Trip, leg: TripLeg) -> some View {
         switch item.id {
         case "packing":
             PackingHomeView()
+        case "tasks":
+            TripTaskListView(trip: trip)
         default:
             DestinationInfoView(leg: leg)
         }

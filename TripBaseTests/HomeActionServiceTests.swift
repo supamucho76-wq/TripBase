@@ -86,6 +86,32 @@ final class HomeActionServiceTests: XCTestCase {
         XCTAssertEqual(action?.id, "packing")
     }
 
+    func testIncompleteBeforeTripTaskSurfacesAfterPackingIsDone() {
+        let leg = makeLeg(hotelName: "Hotel", transportNote: "ANA123", daysFromNow: 20, daysFromNow: 25)
+        let trip = makeTrip(legs: [leg])
+        let packingItem = PackingItem(trip: trip, name: "item", category: .misc, orderIndex: 0)
+        packingItem.isChecked = true
+        trip.packingItems = [packingItem]
+        trip.tasks = [TripTask(trip: trip, title: "有給申請", phase: .beforeTrip, orderIndex: 0)]
+
+        let action = HomeActionService.topPriorityAction(trip: trip, leg: leg, flightCheckinDone: false)
+
+        XCTAssertEqual(action?.id, "tasks")
+    }
+
+    func testDuringTripTasksDoNotBlockCompletion() {
+        let leg = makeLeg(hotelName: "Hotel", transportNote: "ANA123", daysFromNow: 20, daysFromNow: 25)
+        let trip = makeTrip(legs: [leg])
+        let packingItem = PackingItem(trip: trip, name: "item", category: .misc, orderIndex: 0)
+        packingItem.isChecked = true
+        trip.packingItems = [packingItem]
+        trip.tasks = [TripTask(trip: trip, title: "現地でお土産を買う", phase: .duringTrip, orderIndex: 0)]
+
+        let action = HomeActionService.topPriorityAction(trip: trip, leg: leg, flightCheckinDone: true)
+
+        XCTAssertNil(action)
+    }
+
     func testReturnsNilWhenEverythingIsDone() {
         let leg = makeLeg(hotelName: "Hotel", transportNote: "ANA123", daysFromNow: 20, daysFromNow: 25)
         let trip = makeTrip(legs: [leg])
