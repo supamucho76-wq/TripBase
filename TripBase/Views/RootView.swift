@@ -2,6 +2,11 @@ import SwiftUI
 
 struct RootView: View {
     @State private var selection: TripBaseTab = .home
+    @AppStorage(AppearancePreference.storageKey) private var appearanceRawValue: String = AppearancePreference.system.rawValue
+
+    private var appearance: AppearancePreference {
+        AppearancePreference(rawValue: appearanceRawValue) ?? .system
+    }
 
     var body: some View {
         Group {
@@ -18,6 +23,7 @@ struct RootView: View {
             FloatingTabBar(selection: $selection)
         }
         .background(AppTheme.background.ignoresSafeArea())
+        .preferredColorScheme(appearance.colorScheme)
     }
 }
 

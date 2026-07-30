@@ -6,9 +6,19 @@ struct SettingsView: View {
     @Query private var trips: [Trip]
     @State private var isResetConfirmationPresented = false
     @AppStorage(DateFormatPreference.storageKey) private var dateFormatPreferenceRaw: String = DateFormatPreference.gregorian.rawValue
+    @AppStorage(AppearancePreference.storageKey) private var appearancePreferenceRaw: String = AppearancePreference.system.rawValue
 
     var body: some View {
         Form {
+            Section("外観") {
+                Picker("テーマ", selection: $appearancePreferenceRaw) {
+                    ForEach(AppearancePreference.allCases) { preference in
+                        Text(preference.title).tag(preference.rawValue)
+                    }
+                }
+                .pickerStyle(.segmented)
+            }
+
             Section("日付表示") {
                 Picker("形式", selection: $dateFormatPreferenceRaw) {
                     ForEach(DateFormatPreference.allCases) { preference in
