@@ -49,6 +49,10 @@ struct TripDetailView: View {
         return remaining == 0 ? "すべて完了" : "残り\(remaining)件"
     }
 
+    private var noteSummaryText: String {
+        trip.notesList.isEmpty ? "未登録" : "\(trip.notesList.count)件"
+    }
+
     var body: some View {
         List {
             Section {
@@ -106,15 +110,15 @@ struct TripDetailView: View {
                     }
                 }
                 NavigationLink {
-                    ContentUnavailableView(
-                        "メモ機能は準備中です",
-                        systemImage: "note.text",
-                        description: Text("出張中の気づきや次回への引き継ぎをメモできるようになります。")
-                    )
-                    .navigationTitle("メモ")
-                    .navigationBarTitleDisplayMode(.inline)
+                    TripNoteListView(trip: trip)
                 } label: {
-                    Label("メモ", systemImage: "note.text")
+                    HStack {
+                        Label("メモ", systemImage: "note.text")
+                        Spacer()
+                        Text(noteSummaryText)
+                            .font(.caption)
+                            .foregroundStyle(.secondary)
+                    }
                 }
             }
 
