@@ -102,6 +102,15 @@ struct DestinationInfoView: View {
                             .font(.footnote)
                             .foregroundStyle(.secondary)
                     }
+                    if !leg.hotelAddressLocalLanguage.isEmpty {
+                        VStack(alignment: .leading, spacing: 2) {
+                            Text("現地語の住所（タクシーなどで見せる用）")
+                                .font(.caption2)
+                                .foregroundStyle(.secondary)
+                            Text(leg.hotelAddressLocalLanguage)
+                                .font(.footnote.bold())
+                        }
+                    }
                     HStack(spacing: 16) {
                         if !leg.hotelAddress.isEmpty {
                             CopyButton(text: leg.hotelAddress, label: "住所をコピー", systemImage: "doc.on.doc")
@@ -110,6 +119,9 @@ struct DestinationInfoView: View {
                                     Label("地図で開く", systemImage: "map")
                                 }
                             }
+                        }
+                        if !leg.hotelAddressLocalLanguage.isEmpty {
+                            CopyButton(text: leg.hotelAddressLocalLanguage, label: "現地語住所をコピー", systemImage: "doc.on.doc")
                         }
                         if !leg.hotelBookingReference.isEmpty {
                             CopyButton(text: leg.hotelBookingReference, label: "予約番号をコピー", systemImage: "number")

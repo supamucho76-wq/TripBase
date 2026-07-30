@@ -11,6 +11,7 @@ final class TripLeg {
     var departureDate: Date
     var hotelName: String
     var hotelAddress: String
+    var hotelAddressLocalLanguage: String = ""
     var hotelBookingReference: String
     var hotelNotes: String
     var visaStatusRawValue: String
@@ -57,6 +58,7 @@ final class TripLeg {
         self.departureDate = departureDate
         self.hotelName = ""
         self.hotelAddress = ""
+        self.hotelAddressLocalLanguage = ""
         self.hotelBookingReference = ""
         self.hotelNotes = ""
         self.visaStatusRawValue = VisaStatus.notRequired.rawValue

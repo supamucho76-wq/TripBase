@@ -16,6 +16,7 @@ struct TripLegEditorView: View {
     @State private var departureDate: Date
     @State private var hotelName: String
     @State private var hotelAddress: String
+    @State private var hotelAddressLocalLanguage: String
     @State private var hotelBookingReference: String
     @State private var hotelNotes: String
     @State private var visaStatus: VisaStatus
@@ -36,6 +37,7 @@ struct TripLegEditorView: View {
         _departureDate = State(initialValue: existingLeg?.departureDate ?? .now)
         _hotelName = State(initialValue: existingLeg?.hotelName ?? "")
         _hotelAddress = State(initialValue: existingLeg?.hotelAddress ?? "")
+        _hotelAddressLocalLanguage = State(initialValue: existingLeg?.hotelAddressLocalLanguage ?? "")
         _hotelBookingReference = State(initialValue: existingLeg?.hotelBookingReference ?? "")
         _hotelNotes = State(initialValue: existingLeg?.hotelNotes ?? "")
         _visaStatus = State(initialValue: existingLeg?.visaStatus ?? .notRequired)
@@ -73,11 +75,16 @@ struct TripLegEditorView: View {
                     Text("天気が見つからない場合、ここにローマ字表記を入力すると解決することがあります。空欄なら「都市名」をそのまま使います。")
                 }
 
-                Section("宿泊") {
+                Section {
                     TextField("ホテル名", text: $hotelName)
                     TextField("住所", text: $hotelAddress, axis: .vertical)
+                    TextField("現地語の住所（任意）", text: $hotelAddressLocalLanguage, axis: .vertical)
                     TextField("予約番号", text: $hotelBookingReference)
                     TextField("メモ", text: $hotelNotes, axis: .vertical)
+                } header: {
+                    Text("宿泊")
+                } footer: {
+                    Text("現地語の住所を入れておくと、タクシーの運転手などに見せる時に便利です。")
                 }
 
                 Section("ビザ") {
@@ -151,6 +158,7 @@ struct TripLegEditorView: View {
         leg.departureDate = max(departureDate, arrivalDate)
         leg.hotelName = hotelName.trimmingCharacters(in: .whitespacesAndNewlines)
         leg.hotelAddress = hotelAddress.trimmingCharacters(in: .whitespacesAndNewlines)
+        leg.hotelAddressLocalLanguage = hotelAddressLocalLanguage.trimmingCharacters(in: .whitespacesAndNewlines)
         leg.hotelBookingReference = hotelBookingReference.trimmingCharacters(in: .whitespacesAndNewlines)
         leg.hotelNotes = hotelNotes.trimmingCharacters(in: .whitespacesAndNewlines)
         leg.visaStatus = visaStatus
