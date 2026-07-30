@@ -23,23 +23,33 @@ enum HomeActionService {
 
         var items: [HomeActionItem] = []
 
-        let hasHotelInfo = !leg.hotelName.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty
-            || !leg.hotelAddress.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty
+        if leg.visaStatus == .required || leg.visaStatus == .applied {
+            items.append(
+                HomeActionItem(id: "visa", title: "ビザ状況を確認してください", systemImage: "exclamationmark.triangle", isDone: false, kind: .navigate)
+            )
+        }
+
+        let hotelInfoRegistered = hasHotelInfo(leg)
         items.append(
             HomeActionItem(
                 id: "hotel",
-                title: hasHotelInfo ? "ホテル情報登録済み" : "ホテル情報を登録",
+                title: hotelInfoRegistered ? "ホテル情報登録済み" : "ホテル情報が未登録です",
                 systemImage: "bed.double",
-                isDone: hasHotelInfo,
+                isDone: hotelInfoRegistered,
                 kind: .navigate
             )
         )
 
-        if leg.visaStatus == .required || leg.visaStatus == .applied {
-            items.append(
-                HomeActionItem(id: "visa", title: "ビザ状況を確認", systemImage: "exclamationmark.triangle", isDone: false, kind: .navigate)
+        let transportInfoRegistered = hasTransportInfo(leg)
+        items.append(
+            HomeActionItem(
+                id: "transport",
+                title: transportInfoRegistered ? "移動手段の予約情報登録済み" : "航空券・移動手段の予約情報が未登録です",
+                systemImage: "airplane.departure",
+                isDone: transportInfoRegistered,
+                kind: .navigate
             )
-        }
+        )
 
         let packingItems = trip.packingItems
         if !packingItems.isEmpty {
@@ -47,7 +57,7 @@ enum HomeActionService {
             items.append(
                 HomeActionItem(
                     id: "packing",
-                    title: remaining == 0 ? "持ち物 準備完了" : "持ち物 残り\(remaining)件",
+                    title: remaining == 0 ? "持ち物 準備完了" : "持ち物が残り\(remaining)件あります",
                     systemImage: "checklist",
                     isDone: remaining == 0,
                     kind: .navigate
@@ -62,6 +72,59 @@ enum HomeActionService {
         }
 
         return items
+    }
+
+    /// The single most urgent unfinished item, in priority order:
+    /// required documents (proxied by visa status) > flight/hotel
+    /// reservations > an imminent-departure nudge > packing > everything
+    /// else. `nil` means nothing needs attention right now.
+    static func topPriorityAction(trip: Trip, leg: TripLeg, flightCheckinDone: Bool, now: Date = .now) -> HomeActionItem? {
+        if leg.visaStatus == .required || leg.visaStatus == .applied {
+            return HomeActionItem(id: "visa", title: "ビザ状況を確認してください", systemImage: "exclamationmark.triangle", isDone: false, kind: .navigate)
+        }
+
+        if !hasHotelInfo(leg) {
+            return HomeActionItem(id: "hotel", title: "ホテル情報が未登録です", systemImage: "bed.double", isDone: false, kind: .navigate)
+        }
+
+        if !hasTransportInfo(leg) {
+            return HomeActionItem(id: "transport", title: "航空券・移動手段の予約情報が未登録です", systemImage: "airplane.departure", isDone: false, kind: .navigate)
+        }
+
+        if TripStatusService.phase(of: trip, now: now) == .upcoming,
+           let daysLeft = TripStatusService.daysUntilDeparture(of: trip, now: now),
+           daysLeft <= 3 {
+            return HomeActionItem(
+                id: "departure-soon",
+                title: daysLeft == 0 ? "本日出発です" : "出発\(daysLeft)日前です",
+                systemImage: "airplane",
+                isDone: false,
+                kind: .navigate
+            )
+        }
+
+        let packingItems = trip.packingItems
+        if !packingItems.isEmpty {
+            let remaining = packingItems.filter { !$0.isChecked }.count
+            if remaining > 0 {
+                return HomeActionItem(id: "packing", title: "持ち物が残り\(remaining)件あります", systemImage: "checklist", isDone: false, kind: .navigate)
+            }
+        }
+
+        if shouldShowFlightCheckin(leg: leg, now: now), !flightCheckinDone {
+            return HomeActionItem(id: "flight-checkin", title: "フライトチェックインをお済ませください", systemImage: "airplane", isDone: false, kind: .toggle)
+        }
+
+        return nil
+    }
+
+    static func hasHotelInfo(_ leg: TripLeg) -> Bool {
+        !leg.hotelName.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty
+            || !leg.hotelAddress.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty
+    }
+
+    static func hasTransportInfo(_ leg: TripLeg) -> Bool {
+        !leg.transportNote.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty
     }
 
     static func shouldShowFlightCheckin(leg: TripLeg, now: Date = .now) -> Bool {

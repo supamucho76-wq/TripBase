@@ -26,12 +26,14 @@ struct HomeView: View {
                     header
 
                     if let relevantTrip, let currentOrNextLeg {
-                        actionChecklistCard(trip: relevantTrip, leg: currentOrNextLeg)
+                        nextActionCard(trip: relevantTrip, leg: currentOrNextLeg)
                             .id(flightCheckinRefreshToken)
                         countdownCard(trip: relevantTrip, leg: currentOrNextLeg)
                         todayScheduleCard(trip: relevantTrip, leg: currentOrNextLeg)
-                        contextInfoCard(leg: currentOrNextLeg)
+                        actionChecklistCard(trip: relevantTrip, leg: currentOrNextLeg)
+                            .id(flightCheckinRefreshToken)
                         packingProgressCard(trip: relevantTrip)
+                        contextInfoCard(leg: currentOrNextLeg)
                         quickActionsCard(trip: relevantTrip, leg: currentOrNextLeg)
                     } else if let recentTrip = TripStatusService.mostRecentlyCompletedTrip(in: trips) {
                         recentTripSection(trip: recentTrip)
@@ -136,6 +138,110 @@ struct HomeView: View {
         }
     }
 
+    private func nextActionCard(trip: Trip, leg: TripLeg) -> some View {
+        let key = HomeActionService.flightCheckinKey(tripID: trip.id, legID: leg.id)
+        let flightCheckinDone = UserDefaults.standard.bool(forKey: key)
+        let action = HomeActionService.topPriorityAction(trip: trip, leg: leg, flightCheckinDone: flightCheckinDone)
+
+        return Group {
+            if let action {
+                nextActionButton(action: action, trip: trip, leg: leg)
+            } else {
+                allDoneCard
+            }
+        }
+    }
+
+    @ViewBuilder
+    private func nextActionButton(action: HomeActionItem, trip: Trip, leg: TripLeg) -> some View {
+        switch (action.kind, action.id) {
+        case (.toggle, _):
+            Button {
+                let key = HomeActionService.flightCheckinKey(tripID: trip.id, legID: leg.id)
+                UserDefaults.standard.set(true, forKey: key)
+                flightCheckinRefreshToken = UUID()
+            } label: {
+                nextActionLabel(action: action)
+            }
+            .buttonStyle(.plain)
+        case (_, "hotel"), (_, "visa"), (_, "transport"):
+            Button {
+                isEditLegPresented = true
+            } label: {
+                nextActionLabel(action: action)
+            }
+            .buttonStyle(.plain)
+        case (_, "packing"):
+            NavigationLink {
+                PackingHomeView()
+            } label: {
+                nextActionLabel(action: action)
+            }
+            .buttonStyle(.plain)
+        default:
+            NavigationLink {
+                TripDetailView(trip: trip)
+            } label: {
+                nextActionLabel(action: action)
+            }
+            .buttonStyle(.plain)
+        }
+    }
+
+    private func nextActionLabel(action: HomeActionItem) -> some View {
+        HStack(spacing: 14) {
+            Image(systemName: action.systemImage)
+                .font(.title2)
+                .foregroundStyle(AppTheme.accent)
+                .frame(width: 40, height: 40)
+                .background(AppTheme.accent.opacity(0.12))
+                .clipShape(Circle())
+            VStack(alignment: .leading, spacing: 2) {
+                Text("次にやること")
+                    .font(.caption2.bold())
+                    .foregroundStyle(.secondary)
+                Text(action.title)
+                    .font(.headline)
+                    .foregroundStyle(.primary)
+            }
+            Spacer()
+            Image(systemName: "chevron.right")
+                .foregroundStyle(.tertiary)
+        }
+        .padding(16)
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .background(.background)
+        .clipShape(RoundedRectangle(cornerRadius: 18, style: .continuous))
+        .overlay {
+            RoundedRectangle(cornerRadius: 18, style: .continuous)
+                .stroke(AppTheme.accent.opacity(0.5), lineWidth: 1.5)
+        }
+        .shadow(color: .black.opacity(0.05), radius: 8, y: 3)
+    }
+
+    private var allDoneCard: some View {
+        HStack(spacing: 14) {
+            Image(systemName: "checkmark.seal.fill")
+                .font(.title2)
+                .foregroundStyle(AppTheme.accent)
+                .frame(width: 40, height: 40)
+                .background(AppTheme.accent.opacity(0.15))
+                .clipShape(Circle())
+            VStack(alignment: .leading, spacing: 2) {
+                Text("準備完了です")
+                    .font(.headline)
+                Text("未完了の準備はありません")
+                    .font(.subheadline)
+                    .foregroundStyle(.secondary)
+            }
+            Spacer()
+        }
+        .padding(16)
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .background(AppTheme.accent.opacity(0.1))
+        .clipShape(RoundedRectangle(cornerRadius: 18, style: .continuous))
+    }
+
     private func actionChecklistCard(trip: Trip, leg: TripLeg) -> some View {
         let key = HomeActionService.flightCheckinKey(tripID: trip.id, legID: leg.id)
         let flightCheckinDone = UserDefaults.standard.bool(forKey: key)
@@ -190,7 +296,7 @@ struct HomeView: View {
                 actionRowLabel(item: item)
             }
             .buttonStyle(.plain)
-        case .navigate where item.id == "hotel" || item.id == "visa":
+        case .navigate where item.id == "hotel" || item.id == "visa" || item.id == "transport":
             Button {
                 isEditLegPresented = true
             } label: {
@@ -212,11 +318,10 @@ struct HomeView: View {
             Image(systemName: item.isDone ? "checkmark.circle.fill" : "circle")
                 .foregroundStyle(item.isDone ? AppTheme.accent : .secondary)
             Image(systemName: item.systemImage)
-                .foregroundStyle(.secondary)
+                .foregroundStyle(item.isDone ? AppTheme.accent : .secondary)
                 .frame(width: 18)
             Text(item.title)
-                .foregroundStyle(.primary)
-                .strikethrough(item.isDone)
+                .foregroundStyle(item.isDone ? AppTheme.accent : .primary)
             Spacer()
             if item.kind == .navigate {
                 Image(systemName: "chevron.right")
@@ -225,6 +330,10 @@ struct HomeView: View {
             }
         }
         .font(.subheadline)
+        .padding(.vertical, 6)
+        .padding(.horizontal, item.isDone ? 8 : 0)
+        .background(item.isDone ? AppTheme.accent.opacity(0.08) : Color.clear)
+        .clipShape(RoundedRectangle(cornerRadius: 10, style: .continuous))
         .contentShape(Rectangle())
     }
 
