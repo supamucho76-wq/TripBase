@@ -5,6 +5,7 @@ struct HomeView: View {
     @Query(sort: \Trip.createdAt) private var trips: [Trip]
     @State private var isNewLegPresented = false
     @State private var isEditLegPresented = false
+    @State private var isNewTripPresented = false
     @State private var flightCheckinRefreshToken = UUID()
 
     private var relevantTrip: Trip? {
@@ -32,12 +33,10 @@ struct HomeView: View {
                         contextInfoCard(leg: currentOrNextLeg)
                         packingProgressCard(trip: relevantTrip)
                         quickActionsCard(trip: relevantTrip, leg: currentOrNextLeg)
+                    } else if let recentTrip = TripStatusService.mostRecentlyCompletedTrip(in: trips) {
+                        recentTripSection(trip: recentTrip)
                     } else {
-                        ContentUnavailableView(
-                            "出張の予定がありません",
-                            systemImage: "airplane",
-                            description: Text("「出張」タブから行程を追加してください。")
-                        )
+                        emptyStateSection
                     }
                 }
                 .padding()
@@ -64,6 +63,76 @@ struct HomeView: View {
                     )
                 }
             }
+            .sheet(isPresented: $isNewTripPresented) {
+                TripEditorView(existingTrip: nil)
+            }
+        }
+    }
+
+    private func recentTripSection(trip: Trip) -> some View {
+        VStack(spacing: 14) {
+            NavigationLink {
+                TripDetailView(trip: trip)
+            } label: {
+                VStack(alignment: .leading, spacing: 8) {
+                    HStack {
+                        StatusBadge(title: "最近の出張", color: .secondary)
+                        Spacer()
+                        Image(systemName: "chevron.right")
+                            .font(.caption2)
+                            .foregroundStyle(.tertiary)
+                    }
+                    Text(trip.name)
+                        .font(.headline)
+                        .foregroundStyle(.primary)
+                    if let lastDeparture = trip.legs.map(\.departureDate).max() {
+                        Text("\(AppDateFormatter.date.string(from: lastDeparture))に帰国")
+                            .font(.subheadline)
+                            .foregroundStyle(.secondary)
+                    }
+                }
+                .frame(maxWidth: .infinity, alignment: .leading)
+                .cardStyle(padding: 14)
+            }
+            .buttonStyle(.plain)
+
+            NavigationLink {
+                TripListView(initialStatusFilter: .completed)
+            } label: {
+                HStack {
+                    Label("出張履歴を見る", systemImage: "clock.arrow.circlepath")
+                    Spacer()
+                    Image(systemName: "chevron.right")
+                        .font(.caption2)
+                        .foregroundStyle(.tertiary)
+                }
+                .foregroundStyle(.primary)
+                .cardStyle(padding: 14)
+            }
+            .buttonStyle(.plain)
+
+            Button {
+                isNewTripPresented = true
+            } label: {
+                Label("次の出張を追加", systemImage: "plus.circle.fill")
+            }
+            .buttonStyle(LargeActionButtonStyle())
+        }
+    }
+
+    private var emptyStateSection: some View {
+        VStack(spacing: 16) {
+            ContentUnavailableView(
+                "出張の予定がありません",
+                systemImage: "airplane",
+                description: Text("出張を登録すると、準備状況やスケジュールがここに表示されます。")
+            )
+            Button {
+                isNewTripPresented = true
+            } label: {
+                Label("出張を追加", systemImage: "plus.circle.fill")
+            }
+            .buttonStyle(LargeActionButtonStyle())
         }
     }
 
@@ -176,7 +245,6 @@ struct HomeView: View {
 
     private func countdownCard(trip: Trip, leg: TripLeg) -> some View {
         let phase = TripStatusService.phase(of: trip)
-        let sortedLegs = trip.legs.sorted { $0.arrivalDate < $1.arrivalDate }
 
         return NavigationLink {
             TripDetailView(trip: trip)
@@ -193,14 +261,20 @@ struct HomeView: View {
                     .font(.headline)
                     .foregroundStyle(.primary)
 
-                if phase == .inProgress, let lastDeparture = sortedLegs.map(\.departureDate).max() {
-                    let daysLeft = max(0, Calendar.current.dateComponents([.day], from: .now, to: lastDeparture).day ?? 0)
-                    Text("帰国まであと\(daysLeft)日")
-                        .font(.title3.bold())
-                        .foregroundStyle(AppTheme.accent)
-                } else if let firstArrival = sortedLegs.map(\.arrivalDate).min() {
-                    let daysLeft = max(0, Calendar.current.dateComponents([.day], from: .now, to: firstArrival).day ?? 0)
-                    Text("出発まであと\(daysLeft)日")
+                if phase == .inProgress {
+                    if let dayNumber = TripStatusService.dayNumber(of: trip),
+                       let totalDays = TripStatusService.tripDurationDays(of: trip) {
+                        Text("出張\(dayNumber)日目 / 全\(totalDays)日")
+                            .font(.subheadline.bold())
+                            .foregroundStyle(AppTheme.accent)
+                    }
+                    if let daysLeft = TripStatusService.daysUntilReturn(of: trip) {
+                        Text(daysLeft == 0 ? "本日帰国予定" : "帰国まであと\(daysLeft)日")
+                            .font(.title3.bold())
+                            .foregroundStyle(AppTheme.accent)
+                    }
+                } else if let daysLeft = TripStatusService.daysUntilDeparture(of: trip) {
+                    Text(daysLeft == 0 ? "本日出発" : "出発まであと\(daysLeft)日")
                         .font(.title3.bold())
                         .foregroundStyle(AppTheme.accent)
                 }
@@ -215,12 +289,15 @@ struct HomeView: View {
     }
 
     private func todayScheduleCard(trip: Trip, leg: TripLeg) -> some View {
-        NavigationLink {
+        let phase = TripStatusService.phase(of: trip)
+        let headerTitle = phase == .inProgress ? "今日の予定" : "次の目的地"
+
+        return NavigationLink {
             TripDetailView(trip: trip)
         } label: {
             VStack(alignment: .leading, spacing: 6) {
                 HStack {
-                    Label("今日の予定", systemImage: "calendar")
+                    Label(headerTitle, systemImage: "calendar")
                         .font(.caption.bold())
                         .foregroundStyle(.secondary)
                     Spacer()

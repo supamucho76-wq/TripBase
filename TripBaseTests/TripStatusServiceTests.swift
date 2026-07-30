@@ -107,4 +107,69 @@ final class TripStatusServiceTests: XCTestCase {
 
         XCTAssertEqual(result?.name, "recent")
     }
+
+    // MARK: - Day-boundary correctness
+
+    /// Arrival stored with a late time-of-day (e.g. a DatePicker value picked
+    /// in the evening) should still read as "upcoming", not "inProgress",
+    /// right up until midnight - and "inProgress" for the whole of the
+    /// arrival day regardless of what time `now` is.
+    func testPhaseIsUpcomingUntilMidnightBeforeArrivalDayRegardlessOfTimeOfDay() {
+        let calendar = Calendar.current
+        let today = calendar.startOfDay(for: .now)
+        let arrivalTomorrowEvening = calendar.date(byAdding: .hour, value: 44, to: today)! // tomorrow ~20:00
+        let departure = calendar.date(byAdding: .day, value: 3, to: today)!
+        let trip = makeTrip(name: "evening-arrival", legs: [
+            TripLeg(countryCode: "JP", cityName: "a", arrivalDate: arrivalTomorrowEvening, departureDate: departure, orderIndex: 0)
+        ])
+
+        XCTAssertEqual(TripStatusService.phase(of: trip, now: today), .upcoming)
+    }
+
+    func testPhaseIsInProgressForEntireDepartureDayRegardlessOfTimeOfDay() {
+        let calendar = Calendar.current
+        let today = calendar.startOfDay(for: .now)
+        let arrival = calendar.date(byAdding: .day, value: -2, to: today)!
+        let departureThisMorning = calendar.date(byAdding: .hour, value: 6, to: today)!
+        let trip = makeTrip(name: "morning-departure", legs: [
+            TripLeg(countryCode: "JP", cityName: "a", arrivalDate: arrival, departureDate: departureThisMorning, orderIndex: 0)
+        ])
+        // "now" is later the same day, after the stored departure time.
+        let laterToday = calendar.date(byAdding: .hour, value: 20, to: today)!
+
+        XCTAssertEqual(TripStatusService.phase(of: trip, now: laterToday), .inProgress)
+    }
+
+    func testDaysUntilDepartureAndReturn() {
+        let trip = makeTrip(name: "trip", legs: [makeLeg(daysFromNow: 3, daysFromNow: 6, city: "a")])
+
+        XCTAssertEqual(TripStatusService.daysUntilDeparture(of: trip), 3)
+        XCTAssertEqual(TripStatusService.daysUntilReturn(of: trip), 6)
+    }
+
+    func testDayNumberIsOneOnArrivalDayAndNilBeforeTripStarts() {
+        let calendar = Calendar.current
+        let today = calendar.startOfDay(for: .now)
+        let trip = makeTrip(name: "trip", legs: [makeLeg(daysFromNow: 0, daysFromNow: 4, city: "a")])
+        let upcomingTrip = makeTrip(name: "upcoming", legs: [makeLeg(daysFromNow: 2, daysFromNow: 4, city: "a")])
+
+        XCTAssertEqual(TripStatusService.dayNumber(of: trip, now: today), 1)
+        let thirdDay = calendar.date(byAdding: .day, value: 2, to: today)!
+        XCTAssertEqual(TripStatusService.dayNumber(of: trip, now: thirdDay), 3)
+        XCTAssertNil(TripStatusService.dayNumber(of: upcomingTrip, now: today))
+    }
+
+    func testTripDurationDaysAndTotalNightsAreInclusiveOfBothEndpoints() {
+        let trip = makeTrip(name: "trip", legs: [makeLeg(daysFromNow: 0, daysFromNow: 4, city: "a")])
+
+        XCTAssertEqual(TripStatusService.tripDurationDays(of: trip), 5)
+        XCTAssertEqual(TripStatusService.totalNights(of: trip), 4)
+    }
+
+    func testSameDayTripHasOneDurationDayAndZeroNights() {
+        let trip = makeTrip(name: "day-trip", legs: [makeLeg(daysFromNow: 2, daysFromNow: 2, city: "a")])
+
+        XCTAssertEqual(TripStatusService.tripDurationDays(of: trip), 1)
+        XCTAssertEqual(TripStatusService.totalNights(of: trip), 0)
+    }
 }
