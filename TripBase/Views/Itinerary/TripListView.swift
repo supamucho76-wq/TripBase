@@ -112,6 +112,7 @@ struct TripListView: View {
             }
         }
         .navigationTitle("出張一覧")
+        .navigationBarTitleDisplayMode(.inline)
         .navigationDestination(for: Trip.self) { trip in
             TripDetailView(trip: trip)
         }

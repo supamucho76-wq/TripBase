@@ -2,8 +2,8 @@ import SwiftUI
 
 struct CircularProgressRing: View {
     let progress: Double
-    var lineWidth: CGFloat = 10
-    var size: CGFloat = 84
+    var lineWidth: CGFloat = 8
+    var size: CGFloat = 64
 
     var body: some View {
         ZStack {

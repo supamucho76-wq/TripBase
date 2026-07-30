@@ -7,12 +7,12 @@ struct CardContainer: ViewModifier {
         content
             .padding(padding)
             .background(.background)
-            .clipShape(RoundedRectangle(cornerRadius: 18, style: .continuous))
+            .clipShape(RoundedRectangle(cornerRadius: AppTheme.cardCornerRadius, style: .continuous))
             .overlay {
-                RoundedRectangle(cornerRadius: 18, style: .continuous)
+                RoundedRectangle(cornerRadius: AppTheme.cardCornerRadius, style: .continuous)
                     .stroke(.separator.opacity(0.5), lineWidth: 0.5)
             }
-            .shadow(color: .black.opacity(0.04), radius: 6, y: 2)
+            .shadow(color: AppTheme.cardShadowColor, radius: AppTheme.cardShadowRadius, y: AppTheme.cardShadowY)
     }
 }
 

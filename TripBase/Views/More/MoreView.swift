@@ -41,16 +41,19 @@ struct MoreView: View {
                         } label: {
                             toolTile(title: "現地情報", systemImage: "mappin.and.ellipse")
                         }
-                        NavigationLink {
-                            ContentUnavailableView(
-                                "翻訳機能は準備中です",
-                                systemImage: "text.bubble",
-                                description: Text("出張先でよく使う定型文を保存できるようになります。")
-                            )
-                            .navigationTitle("翻訳")
-                        } label: {
-                            toolTile(title: "翻訳", systemImage: "text.bubble.fill", isComingSoon: true)
-                        }
+                    }
+                    .buttonStyle(.plain)
+
+                    NavigationLink {
+                        ContentUnavailableView(
+                            "翻訳機能は準備中です",
+                            systemImage: "text.bubble",
+                            description: Text("出張先でよく使う定型文を保存できるようになります。")
+                        )
+                        .navigationTitle("翻訳")
+                        .navigationBarTitleDisplayMode(.inline)
+                    } label: {
+                        comingSoonTile(title: "翻訳", systemImage: "text.bubble")
                     }
                     .buttonStyle(.plain)
 
@@ -81,10 +84,11 @@ struct MoreView: View {
             .contentMargins(.bottom, 90, for: .scrollContent)
             .background(AppTheme.background)
             .navigationTitle("ツール")
+            .navigationBarTitleDisplayMode(.inline)
         }
     }
 
-    private func toolTile(title: String, systemImage: String, isComingSoon: Bool = false) -> some View {
+    private func toolTile(title: String, systemImage: String) -> some View {
         VStack(spacing: 10) {
             Image(systemName: systemImage)
                 .font(.system(size: 26))
@@ -92,15 +96,37 @@ struct MoreView: View {
             Text(title)
                 .font(.subheadline.bold())
                 .foregroundStyle(.primary)
-            if isComingSoon {
-                Text("準備中")
-                    .font(.caption2)
-                    .foregroundStyle(.secondary)
-            }
         }
-        .frame(maxWidth: .infinity)
-        .padding(.vertical, 20)
+        .frame(maxWidth: .infinity, minHeight: 92)
         .cardStyle(padding: 0)
+    }
+
+    private func comingSoonTile(title: String, systemImage: String) -> some View {
+        HStack(spacing: 12) {
+            Image(systemName: systemImage)
+                .font(.system(size: 22))
+                .foregroundStyle(.secondary)
+            Text(title)
+                .font(.subheadline.bold())
+                .foregroundStyle(.secondary)
+            Spacer()
+            Text("準備中")
+                .font(.caption2.bold())
+                .foregroundStyle(.secondary)
+                .padding(.horizontal, 8)
+                .padding(.vertical, 3)
+                .background(Color.secondary.opacity(0.12))
+                .clipShape(Capsule())
+        }
+        .frame(maxWidth: .infinity, minHeight: 44)
+        .padding(14)
+        .background(.background.opacity(0.6))
+        .clipShape(RoundedRectangle(cornerRadius: AppTheme.cardCornerRadius, style: .continuous))
+        .overlay {
+            RoundedRectangle(cornerRadius: AppTheme.cardCornerRadius, style: .continuous)
+                .stroke(style: StrokeStyle(lineWidth: 1, dash: [4, 3]))
+                .foregroundStyle(.separator)
+        }
     }
 }
 

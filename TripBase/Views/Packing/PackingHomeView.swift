@@ -47,6 +47,7 @@ struct PackingHomeView: View {
             }
         }
         .navigationTitle("持ち物")
+        .navigationBarTitleDisplayMode(.inline)
         .toolbar {
             if relevantTrips.count > 1 {
                 ToolbarItem(placement: .topBarLeading) {
@@ -70,14 +71,14 @@ struct PackingHomeView: View {
 
         return List {
             Section {
-                VStack(spacing: 10) {
+                VStack(spacing: 8) {
                     Text(trip.name)
                         .font(.headline)
                     if !trip.packingItems.isEmpty {
                         CircularProgressRing(progress: percent)
                         Text(percent >= 1 ? "準備完了！" : "残り\(remainingCount)件")
-                            .font(.subheadline.bold())
-                            .foregroundStyle(percent >= 1 ? AppTheme.accent : .secondary)
+                            .font(.title3.bold())
+                            .foregroundStyle(percent >= 1 ? AppTheme.accent : (isUrgent ? AppTheme.danger : .primary))
                         if percent >= 1 {
                             Label("すべて準備できました", systemImage: "party.popper.fill")
                                 .font(.footnote.bold())
@@ -120,13 +121,16 @@ struct PackingHomeView: View {
                         } label: {
                             HStack {
                                 Image(systemName: item.isChecked ? "checkmark.circle.fill" : "circle")
-                                    .foregroundStyle(item.isChecked ? AppTheme.accent : (isUrgent ? AppTheme.danger : .secondary))
+                                    .foregroundStyle(item.isChecked ? .secondary : (isUrgent ? AppTheme.danger : .primary))
                                 Text(item.name)
-                                    .foregroundStyle(item.isChecked ? .primary : (isUrgent ? AppTheme.danger : .primary))
-                                    .strikethrough(item.isChecked)
+                                    .foregroundStyle(item.isChecked ? .secondary : (isUrgent ? AppTheme.danger : .primary))
                                 Spacer()
                             }
+                            .opacity(item.isChecked ? 0.55 : 1)
+                            .frame(maxWidth: .infinity, alignment: .leading)
+                            .contentShape(Rectangle())
                         }
+                        .buttonStyle(.plain)
                     }
                     .onDelete { offsets in
                         delete(offsets, in: group.items)
@@ -156,6 +160,7 @@ struct PackingHomeView: View {
             }
         }
         .listStyle(.insetGrouped)
+        .listSectionSpacing(.compact)
         .contentMargins(.bottom, 90, for: .scrollContent)
     }
 

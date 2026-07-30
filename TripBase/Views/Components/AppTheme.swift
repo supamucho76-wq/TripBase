@@ -5,6 +5,13 @@ enum AppTheme {
     static let warning = Color(red: 0.88, green: 0.45, blue: 0.08)
     static let danger = Color(red: 0.78, green: 0.12, blue: 0.12)
     static let background = Color(.systemGroupedBackground)
+
+    // Shared so every hand-rolled card (accent-tinted highlight cards that
+    // can't just use .cardStyle()) matches CardContainer's plain-card look.
+    static let cardCornerRadius: CGFloat = 18
+    static let cardShadowColor = Color.black.opacity(0.04)
+    static let cardShadowRadius: CGFloat = 6
+    static let cardShadowY: CGFloat = 2
 }
 
 struct LargeActionButtonStyle: ButtonStyle {

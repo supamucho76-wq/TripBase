@@ -30,6 +30,7 @@ struct TimezoneOverviewView: View {
         }
         .contentMargins(.bottom, 90, for: .scrollContent)
         .navigationTitle("時差")
+        .navigationBarTitleDisplayMode(.inline)
     }
 
     @ViewBuilder

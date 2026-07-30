@@ -41,6 +41,7 @@ struct WeatherView: View {
         .contentMargins(.bottom, 90, for: .scrollContent)
         .background(AppTheme.background)
         .navigationTitle("天気")
+        .navigationBarTitleDisplayMode(.inline)
         .task(id: relevantLegs.map(\.id)) {
             await loadForecasts()
         }

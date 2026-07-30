@@ -73,6 +73,7 @@ struct TripDetailView: View {
                         description: Text("航空券・ホテル予約・パスポートなどをまとめて保存できるようになります。")
                     )
                     .navigationTitle("書類")
+                    .navigationBarTitleDisplayMode(.inline)
                 } label: {
                     Label("書類", systemImage: "doc.text")
                 }
@@ -86,6 +87,7 @@ struct TripDetailView: View {
                         description: Text("出張前後にやることをリストで管理できるようになります。")
                     )
                     .navigationTitle("タスク")
+                    .navigationBarTitleDisplayMode(.inline)
                 } label: {
                     Label("タスク", systemImage: "checkmark.circle")
                 }
@@ -96,6 +98,7 @@ struct TripDetailView: View {
                         description: Text("出張中の気づきや次回への引き継ぎをメモできるようになります。")
                     )
                     .navigationTitle("メモ")
+                    .navigationBarTitleDisplayMode(.inline)
                 } label: {
                     Label("メモ", systemImage: "note.text")
                 }

@@ -35,6 +35,7 @@ struct SettingsView: View {
         }
         .contentMargins(.bottom, 90, for: .scrollContent)
         .navigationTitle("設定")
+        .navigationBarTitleDisplayMode(.inline)
         .confirmationDialog(
             "すべてのデータを削除しますか?",
             isPresented: $isResetConfirmationPresented,

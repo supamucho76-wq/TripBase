@@ -211,12 +211,12 @@ struct HomeView: View {
         .padding(16)
         .frame(maxWidth: .infinity, alignment: .leading)
         .background(.background)
-        .clipShape(RoundedRectangle(cornerRadius: 18, style: .continuous))
+        .clipShape(RoundedRectangle(cornerRadius: AppTheme.cardCornerRadius, style: .continuous))
         .overlay {
-            RoundedRectangle(cornerRadius: 18, style: .continuous)
+            RoundedRectangle(cornerRadius: AppTheme.cardCornerRadius, style: .continuous)
                 .stroke(AppTheme.accent.opacity(0.5), lineWidth: 1.5)
         }
-        .shadow(color: .black.opacity(0.05), radius: 8, y: 3)
+        .shadow(color: AppTheme.cardShadowColor, radius: AppTheme.cardShadowRadius, y: AppTheme.cardShadowY)
     }
 
     private var allDoneCard: some View {
@@ -239,7 +239,7 @@ struct HomeView: View {
         .padding(16)
         .frame(maxWidth: .infinity, alignment: .leading)
         .background(AppTheme.accent.opacity(0.1))
-        .clipShape(RoundedRectangle(cornerRadius: 18, style: .continuous))
+        .clipShape(RoundedRectangle(cornerRadius: AppTheme.cardCornerRadius, style: .continuous))
     }
 
     private func actionChecklistCard(trip: Trip, leg: TripLeg) -> some View {
@@ -398,8 +398,8 @@ struct HomeView: View {
             .frame(maxWidth: .infinity, alignment: .leading)
             .padding(16)
             .background(AppTheme.accent.opacity(0.11))
-            .clipShape(RoundedRectangle(cornerRadius: 18, style: .continuous))
-            .shadow(color: .black.opacity(0.05), radius: 8, y: 3)
+            .clipShape(RoundedRectangle(cornerRadius: AppTheme.cardCornerRadius, style: .continuous))
+            .shadow(color: AppTheme.cardShadowColor, radius: AppTheme.cardShadowRadius, y: AppTheme.cardShadowY)
         }
         .buttonStyle(.plain)
     }
