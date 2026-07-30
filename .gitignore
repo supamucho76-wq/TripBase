@@ -21,6 +21,10 @@ Package.resolved
 *.mobileprovision
 Secrets.xcconfig
 ExportOptions.plist
+cert_key
+cert_key.pub
+*.pem
+*.key
 
 # macOS / Windows
 .DS_Store

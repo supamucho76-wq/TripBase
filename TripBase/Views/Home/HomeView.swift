@@ -68,7 +68,32 @@ struct HomeView: View {
             .sheet(isPresented: $isNewTripPresented) {
                 TripEditorView(existingTrip: nil)
             }
+            .task(id: reminderSchedulingKey) {
+                await scheduleReminders()
+            }
         }
+    }
+
+    private var reminderSchedulingKey: String {
+        guard let relevantTrip else { return "none" }
+        let packingRemaining = relevantTrip.packingItems.filter { !$0.isChecked }.count
+        let docsUnconfirmed = DocumentService.unconfirmedCount(relevantTrip.documents)
+        return "\(relevantTrip.id)-\(packingRemaining)-\(docsUnconfirmed)"
+    }
+
+    private func scheduleReminders() async {
+        guard let relevantTrip, let firstArrival = relevantTrip.legs.map(\.arrivalDate).min() else { return }
+        let tripID = relevantTrip.id
+        let tripName = relevantTrip.name
+        let packingRemaining = relevantTrip.packingItems.filter { !$0.isChecked }.count
+        let docsUnconfirmed = DocumentService.unconfirmedCount(relevantTrip.documents)
+        await NotificationScheduler.scheduleDepartureReminders(
+            tripID: tripID,
+            tripName: tripName,
+            firstArrivalDate: firstArrival,
+            packingRemainingCount: packingRemaining,
+            documentsUnconfirmedCount: docsUnconfirmed
+        )
     }
 
     private func recentTripSection(trip: Trip) -> some View {

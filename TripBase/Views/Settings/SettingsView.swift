@@ -1,12 +1,15 @@
 import SwiftData
 import SwiftUI
+import UserNotifications
 
 struct SettingsView: View {
     @Environment(\.modelContext) private var modelContext
     @Query private var trips: [Trip]
     @State private var isResetConfirmationPresented = false
+    @State private var authorizationStatus: UNAuthorizationStatus = .notDetermined
     @AppStorage(DateFormatPreference.storageKey) private var dateFormatPreferenceRaw: String = DateFormatPreference.gregorian.rawValue
     @AppStorage(AppearancePreference.storageKey) private var appearancePreferenceRaw: String = AppearancePreference.system.rawValue
+    @AppStorage(NotificationScheduler.enabledKey) private var remindersEnabled = false
 
     var body: some View {
         Form {
@@ -17,6 +20,31 @@ struct SettingsView: View {
                     }
                 }
                 .pickerStyle(.segmented)
+            }
+
+            Section {
+                Toggle("出発前リマインダー", isOn: $remindersEnabled)
+                    .onChange(of: remindersEnabled) { _, isEnabled in
+                        if isEnabled {
+                            Task {
+                                _ = await NotificationScheduler.requestAuthorizationIfNeeded()
+                                authorizationStatus = await NotificationScheduler.authorizationStatus()
+                            }
+                        }
+                    }
+                if remindersEnabled && authorizationStatus == .denied {
+                    Button {
+                        if let url = URL(string: UIApplication.openSettingsURLString) {
+                            UIApplication.shared.open(url)
+                        }
+                    } label: {
+                        Label("設定アプリで通知を許可する", systemImage: "gear")
+                    }
+                }
+            } header: {
+                Text("通知")
+            } footer: {
+                Text("出発7日前・3日前・前日・当日に、持ち物や書類の準備が未完了の場合だけ通知します。")
             }
 
             Section("日付表示") {
@@ -55,6 +83,9 @@ struct SettingsView: View {
             Button("キャンセル", role: .cancel) {}
         } message: {
             Text("すべての出張・行程が削除され、元に戻せません。")
+        }
+        .task {
+            authorizationStatus = await NotificationScheduler.authorizationStatus()
         }
     }
 
