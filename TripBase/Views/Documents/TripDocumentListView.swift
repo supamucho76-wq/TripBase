@@ -118,9 +118,16 @@ struct TripDocumentListView: View {
             Image(systemName: document.isConfirmed ? "checkmark.circle.fill" : "circle")
                 .foregroundStyle(document.isConfirmed ? AppTheme.accent : .secondary)
             VStack(alignment: .leading, spacing: 4) {
-                Text(document.name)
-                    .font(.subheadline.bold())
-                    .foregroundStyle(.primary)
+                HStack(spacing: 4) {
+                    Text(document.name)
+                        .font(.subheadline.bold())
+                        .foregroundStyle(.primary)
+                    if document.hasAttachment {
+                        Image(systemName: "paperclip")
+                            .font(.caption)
+                            .foregroundStyle(.secondary)
+                    }
+                }
                 if !document.referenceNumber.isEmpty {
                     Text(document.referenceNumber)
                         .font(.caption)

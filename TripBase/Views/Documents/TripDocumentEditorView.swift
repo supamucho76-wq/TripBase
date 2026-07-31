@@ -1,5 +1,8 @@
+import PhotosUI
+import QuickLook
 import SwiftData
 import SwiftUI
+import UniformTypeIdentifiers
 
 struct TripDocumentEditorView: View {
     let trip: Trip
@@ -18,6 +21,19 @@ struct TripDocumentEditorView: View {
     @State private var errorMessage: String?
     @State private var isDeleteConfirmationPresented = false
 
+    @State private var photoPickerItem: PhotosPickerItem?
+    @State private var isFileImporterPresented = false
+    @State private var pendingAttachment: PendingAttachment?
+    @State private var shouldRemoveExistingAttachment = false
+    @State private var previewURL: URL?
+    @State private var attachmentErrorMessage: String?
+
+    private struct PendingAttachment {
+        let data: Data
+        let fileExtension: String
+        let originalFileName: String
+    }
+
     init(trip: Trip, existingDocument: TripDocument?, defaultCategory: DocumentCategory = .other) {
         self.trip = trip
         self.existingDocument = existingDocument
@@ -29,6 +45,17 @@ struct TripDocumentEditorView: View {
         _expiryDate = State(initialValue: existingDocument?.expiryDate ?? .now)
         _notes = State(initialValue: existingDocument?.notes ?? "")
         _isConfirmed = State(initialValue: existingDocument?.isConfirmed ?? false)
+    }
+
+    private var hasAnyAttachment: Bool {
+        pendingAttachment != nil || (existingDocument?.hasAttachment == true && !shouldRemoveExistingAttachment)
+    }
+
+    private var attachmentDisplayName: String {
+        if let pendingAttachment {
+            return pendingAttachment.originalFileName
+        }
+        return existingDocument?.attachmentOriginalFileName ?? ""
     }
 
     var body: some View {
@@ -55,6 +82,19 @@ struct TripDocumentEditorView: View {
 
                 Section {
                     TextField("メモ", text: $notes, axis: .vertical)
+                }
+
+                Section {
+                    attachmentContent
+                } header: {
+                    Text("画像・PDF")
+                } footer: {
+                    if let attachmentErrorMessage {
+                        Text(attachmentErrorMessage)
+                            .foregroundStyle(AppTheme.danger)
+                    } else {
+                        Text("航空券・パスポートなどの画像やPDFを添付できます。")
+                    }
                 }
 
                 Section {
@@ -95,6 +135,110 @@ struct TripDocumentEditorView: View {
             } message: {
                 Text("削除した内容は元に戻せません。")
             }
+            .onChange(of: photoPickerItem) { _, newValue in
+                guard let newValue else { return }
+                Task { await loadPhoto(newValue) }
+            }
+            .fileImporter(
+                isPresented: $isFileImporterPresented,
+                allowedContentTypes: [.pdf, .image],
+                allowsMultipleSelection: false
+            ) { result in
+                handleFileImport(result)
+            }
+            .quickLookPreview($previewURL)
+        }
+    }
+
+    @ViewBuilder
+    private var attachmentContent: some View {
+        if hasAnyAttachment {
+            HStack {
+                Image(systemName: "paperclip")
+                    .foregroundStyle(AppTheme.accent)
+                Text(attachmentDisplayName)
+                    .lineLimit(1)
+                Spacer()
+                Button("表示") {
+                    showPreview()
+                }
+                Button(role: .destructive) {
+                    removeAttachment()
+                } label: {
+                    Image(systemName: "trash")
+                        .frame(minWidth: 44, minHeight: 44)
+                }
+                .accessibilityLabel("添付を削除")
+            }
+        } else {
+            HStack(spacing: 16) {
+                PhotosPicker(selection: $photoPickerItem, matching: .images) {
+                    Label("写真", systemImage: "photo")
+                }
+                Button {
+                    isFileImporterPresented = true
+                } label: {
+                    Label("ファイル（PDF等）", systemImage: "doc.badge.plus")
+                }
+            }
+        }
+    }
+
+    private func loadPhoto(_ item: PhotosPickerItem) async {
+        attachmentErrorMessage = nil
+        do {
+            guard let data = try await item.loadTransferable(type: Data.self) else {
+                attachmentErrorMessage = "写真を読み込めませんでした。"
+                return
+            }
+            pendingAttachment = PendingAttachment(data: data, fileExtension: "jpg", originalFileName: "写真.jpg")
+            shouldRemoveExistingAttachment = false
+        } catch {
+            attachmentErrorMessage = "写真を読み込めませんでした。"
+        }
+    }
+
+    private func handleFileImport(_ result: Result<[URL], Error>) {
+        attachmentErrorMessage = nil
+        switch result {
+        case .success(let urls):
+            guard let url = urls.first else { return }
+            let didStartAccessing = url.startAccessingSecurityScopedResource()
+            defer {
+                if didStartAccessing { url.stopAccessingSecurityScopedResource() }
+            }
+            do {
+                let data = try Data(contentsOf: url)
+                let fileExtension = url.pathExtension.isEmpty ? "pdf" : url.pathExtension
+                pendingAttachment = PendingAttachment(
+                    data: data,
+                    fileExtension: fileExtension,
+                    originalFileName: url.lastPathComponent
+                )
+                shouldRemoveExistingAttachment = false
+            } catch {
+                attachmentErrorMessage = "ファイルを読み込めませんでした。"
+            }
+        case .failure:
+            attachmentErrorMessage = "ファイルを読み込めませんでした。"
+        }
+    }
+
+    private func removeAttachment() {
+        pendingAttachment = nil
+        photoPickerItem = nil
+        shouldRemoveExistingAttachment = true
+    }
+
+    private func showPreview() {
+        if let pendingAttachment {
+            let tempURL = FileManager.default.temporaryDirectory
+                .appendingPathComponent(UUID().uuidString)
+                .appendingPathExtension(pendingAttachment.fileExtension)
+            try? pendingAttachment.data.write(to: tempURL)
+            previewURL = tempURL
+        } else if let fileName = existingDocument?.attachmentFileName {
+            previewURL = TripDocumentStorage.url(for: fileName)
         }
     }
 
@@ -113,6 +257,27 @@ struct TripDocumentEditorView: View {
         document.isConfirmed = isConfirmed
         document.updatedAt = .now
 
+        if let pendingAttachment {
+            if let oldFileName = document.attachmentFileName {
+                TripDocumentStorage.delete(oldFileName)
+            }
+            do {
+                let storedFileName = try TripDocumentStorage.store(
+                    data: pendingAttachment.data,
+                    fileExtension: pendingAttachment.fileExtension
+                )
+                document.attachmentFileName = storedFileName
+                document.attachmentOriginalFileName = pendingAttachment.originalFileName
+            } catch {
+                errorMessage = "添付の保存に失敗しました。"
+                return
+            }
+        } else if shouldRemoveExistingAttachment, let oldFileName = document.attachmentFileName {
+            TripDocumentStorage.delete(oldFileName)
+            document.attachmentFileName = nil
+            document.attachmentOriginalFileName = ""
+        }
+
         if existingDocument == nil {
             trip.documents.append(document)
         }
@@ -127,6 +292,9 @@ struct TripDocumentEditorView: View {
 
     private func deleteDocument() {
         guard let existingDocument else { return }
+        if let fileName = existingDocument.attachmentFileName {
+            TripDocumentStorage.delete(fileName)
+        }
         trip.documents.removeAll(where: { $0 === existingDocument })
         modelContext.delete(existingDocument)
 

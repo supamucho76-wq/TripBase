@@ -45,12 +45,18 @@ final class TripDocument {
     var notes: String
     var isConfirmed: Bool
     var orderIndex: Int
+    var attachmentFileName: String?
+    var attachmentOriginalFileName: String = ""
     var createdAt: Date
     var updatedAt: Date
 
     var category: DocumentCategory {
         get { DocumentCategory(rawValue: categoryRawValue) ?? .other }
         set { categoryRawValue = newValue.rawValue }
+    }
+
+    var hasAttachment: Bool {
+        attachmentFileName != nil
     }
 
     init(
@@ -73,6 +79,8 @@ final class TripDocument {
         self.notes = notes
         self.isConfirmed = isConfirmed
         self.orderIndex = orderIndex
+        self.attachmentFileName = nil
+        self.attachmentOriginalFileName = ""
         self.createdAt = .now
         self.updatedAt = .now
     }
