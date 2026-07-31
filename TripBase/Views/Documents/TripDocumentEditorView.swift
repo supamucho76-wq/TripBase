@@ -47,8 +47,12 @@ struct TripDocumentEditorView: View {
         _isConfirmed = State(initialValue: existingDocument?.isConfirmed ?? false)
     }
 
+    private var hasSavedAttachment: Bool {
+        existingDocument?.hasAttachment == true && !shouldRemoveExistingAttachment
+    }
+
     private var hasAnyAttachment: Bool {
-        pendingAttachment != nil || (existingDocument?.hasAttachment == true && !shouldRemoveExistingAttachment)
+        pendingAttachment != nil || hasSavedAttachment
     }
 
     private var attachmentDisplayName: String {
@@ -56,6 +60,11 @@ struct TripDocumentEditorView: View {
             return pendingAttachment.originalFileName
         }
         return existingDocument?.attachmentOriginalFileName ?? ""
+    }
+
+    private var pendingThumbnail: UIImage? {
+        guard let pendingAttachment, pendingAttachment.fileExtension.lowercased() != "pdf" else { return nil }
+        return UIImage(data: pendingAttachment.data)
     }
 
     var body: some View {
@@ -152,7 +161,35 @@ struct TripDocumentEditorView: View {
 
     @ViewBuilder
     private var attachmentContent: some View {
-        if hasAnyAttachment {
+        if pendingAttachment != nil {
+            // Not saved yet - deliberately no modal preview here. Presenting
+            // QuickLook on top of this still-unsaved sheet risks a dismiss
+            // gesture cascading and closing the edit sheet itself, silently
+            // discarding the pending selection. An inline thumbnail (or an
+            // icon for PDFs, previewable only after saving) avoids that.
+            HStack {
+                if let pendingThumbnail {
+                    Image(uiImage: pendingThumbnail)
+                        .resizable()
+                        .scaledToFill()
+                        .frame(width: 40, height: 40)
+                        .clipShape(RoundedRectangle(cornerRadius: 6, style: .continuous))
+                } else {
+                    Image(systemName: "doc.richtext")
+                        .foregroundStyle(AppTheme.accent)
+                }
+                Text(attachmentDisplayName)
+                    .lineLimit(1)
+                Spacer()
+                Button(role: .destructive) {
+                    removeAttachment()
+                } label: {
+                    Image(systemName: "trash")
+                        .frame(minWidth: 44, minHeight: 44)
+                }
+                .accessibilityLabel("添付を削除")
+            }
+        } else if hasSavedAttachment {
             HStack {
                 Image(systemName: "paperclip")
                     .foregroundStyle(AppTheme.accent)
@@ -231,13 +268,10 @@ struct TripDocumentEditorView: View {
     }
 
     private func showPreview() {
-        if let pendingAttachment {
-            let tempURL = FileManager.default.temporaryDirectory
-                .appendingPathComponent(UUID().uuidString)
-                .appendingPathExtension(pendingAttachment.fileExtension)
-            try? pendingAttachment.data.write(to: tempURL)
-            previewURL = tempURL
-        } else if let fileName = existingDocument?.attachmentFileName {
+        // Only reachable for an already-saved attachment (see
+        // attachmentContent) - safe to present a modal here since there's no
+        // unsaved pending state that a stray dismiss gesture could discard.
+        if let fileName = existingDocument?.attachmentFileName {
             previewURL = TripDocumentStorage.url(for: fileName)
         }
     }
