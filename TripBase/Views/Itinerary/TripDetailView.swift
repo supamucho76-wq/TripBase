@@ -53,6 +53,14 @@ struct TripDetailView: View {
         trip.notesList.isEmpty ? "未登録" : "\(trip.notesList.count)件"
     }
 
+    private var perDiemSummaryText: String {
+        guard let rule = trip.perDiemRule, let durationDays = TripStatusService.tripDurationDays(of: trip) else {
+            return "未設定"
+        }
+        let total = PerDiemCalculator.total(rule: rule, tripDurationDays: durationDays)
+        return "\(total.formatted(.number.precision(.fractionLength(0...2)))) \(rule.currencyCode)"
+    }
+
     var body: some View {
         List {
             Section {
@@ -120,6 +128,22 @@ struct TripDetailView: View {
                             .foregroundStyle(.secondary)
                     }
                 }
+            }
+
+            Section {
+                NavigationLink {
+                    PerDiemView(trip: trip)
+                } label: {
+                    HStack {
+                        Label("日当計算（参考）", systemImage: "yensign.circle")
+                        Spacer()
+                        Text(perDiemSummaryText)
+                            .font(.caption)
+                            .foregroundStyle(.secondary)
+                    }
+                }
+            } footer: {
+                Text("参考値です。正式な支給額は勤務先の規定をご確認ください。")
             }
 
             if sortedLegs.isEmpty {

@@ -31,6 +31,9 @@ final class Trip {
     @Relationship(deleteRule: .cascade, inverse: \TripNote.trip)
     var notesList: [TripNote] = []
 
+    @Relationship(deleteRule: .cascade, inverse: \PerDiemRule.trip)
+    var perDiemRule: PerDiemRule?
+
     static let homeCountryCodeKey = "homeCountryCode"
 
     /// Computed from the itinerary rather than stored, so it can never
@@ -61,5 +64,6 @@ final class Trip {
         self.documents = []
         self.tasks = []
         self.notesList = []
+        self.perDiemRule = nil
     }
 }

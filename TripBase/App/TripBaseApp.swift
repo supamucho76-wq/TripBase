@@ -19,7 +19,8 @@ struct TripBaseApp: App {
             LocalPlace.self,
             TripDocument.self,
             TripTask.self,
-            TripNote.self
+            TripNote.self,
+            PerDiemRule.self
         ])
         let configuration = ModelConfiguration(
             schema: schema,
