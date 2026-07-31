@@ -2,7 +2,7 @@ import SwiftData
 import SwiftUI
 
 struct TimezoneOverviewView: View {
-    @Query(sort: \Trip.createdAt) private var trips: [Trip]
+    @Query(filter: #Predicate<Trip> { !$0.isTemplate }, sort: \Trip.createdAt) private var trips: [Trip]
 
     private var allLegs: [TripLeg] {
         trips.flatMap(\.legs)

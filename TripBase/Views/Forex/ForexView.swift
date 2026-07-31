@@ -2,7 +2,7 @@ import SwiftData
 import SwiftUI
 
 struct ForexView: View {
-    @Query(sort: \Trip.createdAt) private var trips: [Trip]
+    @Query(filter: #Predicate<Trip> { !$0.isTemplate }, sort: \Trip.createdAt) private var trips: [Trip]
 
     @State private var amountText = "10000"
     @State private var forexRate: ForexRate?

@@ -2,7 +2,7 @@ import SwiftData
 import SwiftUI
 
 struct HomeView: View {
-    @Query(sort: \Trip.createdAt) private var trips: [Trip]
+    @Query(filter: #Predicate<Trip> { !$0.isTemplate }, sort: \Trip.createdAt) private var trips: [Trip]
     @State private var isNewLegPresented = false
     @State private var isEditLegPresented = false
     @State private var isNewTripPresented = false

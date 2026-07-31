@@ -2,7 +2,7 @@ import SwiftData
 import SwiftUI
 
 struct WeatherView: View {
-    @Query(sort: \Trip.createdAt) private var trips: [Trip]
+    @Query(filter: #Predicate<Trip> { !$0.isTemplate }, sort: \Trip.createdAt) private var trips: [Trip]
 
     @State private var forecastsByLegID: [UUID: WeatherForecast] = [:]
     @State private var staleLegIDs: Set<UUID> = []

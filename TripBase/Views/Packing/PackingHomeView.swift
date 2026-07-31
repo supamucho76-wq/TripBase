@@ -3,7 +3,7 @@ import SwiftUI
 
 struct PackingHomeView: View {
     @Environment(\.modelContext) private var modelContext
-    @Query(sort: \Trip.createdAt, order: .reverse) private var trips: [Trip]
+    @Query(filter: #Predicate<Trip> { !$0.isTemplate }, sort: \Trip.createdAt, order: .reverse) private var trips: [Trip]
     @State private var selectedTripID: UUID?
     @State private var newItemName = ""
     @State private var newItemCategory: PackingCategory = .misc

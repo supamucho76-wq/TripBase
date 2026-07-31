@@ -2,7 +2,7 @@ import SwiftData
 import SwiftUI
 
 struct MoreView: View {
-    @Query(sort: \Trip.createdAt) private var trips: [Trip]
+    @Query(filter: #Predicate<Trip> { !$0.isTemplate }, sort: \Trip.createdAt) private var trips: [Trip]
 
     private var allLegs: [TripLeg] {
         trips.flatMap(\.legs)
@@ -58,6 +58,23 @@ struct MoreView: View {
                         } label: {
                             HStack {
                                 Label("出張履歴", systemImage: "clock.arrow.circlepath")
+                                Spacer()
+                                Image(systemName: "chevron.right")
+                                    .font(.caption2)
+                                    .foregroundStyle(.tertiary)
+                            }
+                            .foregroundStyle(.primary)
+                            .padding(14)
+                            .frame(maxWidth: .infinity, alignment: .leading)
+                            .cardStyle(padding: 0)
+                        }
+                        .pressableCardStyle()
+
+                        NavigationLink {
+                            TripTemplateListView()
+                        } label: {
+                            HStack {
+                                Label("テンプレート管理", systemImage: "doc.on.doc")
                                 Spacer()
                                 Image(systemName: "chevron.right")
                                     .font(.caption2)

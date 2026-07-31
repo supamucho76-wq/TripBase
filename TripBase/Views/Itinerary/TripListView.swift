@@ -37,7 +37,7 @@ enum TripRegionFilter: String, CaseIterable, Identifiable {
 
 struct TripListView: View {
     @Environment(\.modelContext) private var modelContext
-    @Query(sort: \Trip.createdAt, order: .reverse) private var trips: [Trip]
+    @Query(filter: #Predicate<Trip> { !$0.isTemplate }, sort: \Trip.createdAt, order: .reverse) private var trips: [Trip]
     @State private var isNewTripPresented = false
     @State private var tripPendingDelete: Trip?
     @State private var statusFilter: TripStatusFilter

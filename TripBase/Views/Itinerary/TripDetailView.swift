@@ -9,6 +9,7 @@ struct TripDetailView: View {
     @State private var legPendingEdit: TripLeg?
     @State private var legPendingDelete: TripLeg?
     @State private var isTripEditorPresented = false
+    @State private var isTemplateSavedConfirmationPresented = false
 
     private var sortedLegs: [TripLeg] {
         trip.legs.sorted { $0.orderIndex < $1.orderIndex }
@@ -209,6 +210,11 @@ struct TripDetailView: View {
                     isTripEditorPresented = true
                 }
             }
+            ToolbarItem(placement: .secondaryAction) {
+                Button("テンプレートとして保存") {
+                    saveAsTemplate()
+                }
+            }
         }
         .sheet(isPresented: $isNewLegPresented) {
             TripLegEditorView(trip: trip, existingLeg: nil, nextOrderIndex: sortedLegs.count)
@@ -240,6 +246,17 @@ struct TripDetailView: View {
         } message: {
             Text("削除すると元に戻せません。")
         }
+        .alert("テンプレートとして保存しました", isPresented: $isTemplateSavedConfirmationPresented) {
+            Button("OK") {}
+        } message: {
+            Text("ツールタブの「テンプレート管理」から、いつでも同じ内容の出張を作成できます。")
+        }
+    }
+
+    private func saveAsTemplate() {
+        TripDuplicationService.duplicate(source: trip, asTemplate: true, in: modelContext)
+        try? modelContext.save()
+        isTemplateSavedConfirmationPresented = true
     }
 
     private var summaryCard: some View {

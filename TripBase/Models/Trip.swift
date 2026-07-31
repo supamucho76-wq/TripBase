@@ -12,6 +12,7 @@ final class Trip {
     var name: String
     var purpose: String = ""
     var baseCurrencyCode: String = "JPY"
+    var isTemplate: Bool = false
     var notes: String
     var createdAt: Date
     var updatedAt: Date
@@ -49,6 +50,7 @@ final class Trip {
         name: String,
         purpose: String = "",
         baseCurrencyCode: String = "JPY",
+        isTemplate: Bool = false,
         notes: String = "",
         createdAt: Date = .now
     ) {
@@ -56,6 +58,7 @@ final class Trip {
         self.name = name
         self.purpose = purpose
         self.baseCurrencyCode = baseCurrencyCode
+        self.isTemplate = isTemplate
         self.notes = notes
         self.createdAt = createdAt
         self.updatedAt = createdAt

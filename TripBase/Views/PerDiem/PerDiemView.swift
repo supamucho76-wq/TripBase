@@ -5,7 +5,7 @@ struct PerDiemView: View {
     @Bindable var trip: Trip
 
     @Environment(\.modelContext) private var modelContext
-    @Query(sort: \Trip.createdAt) private var allTrips: [Trip]
+    @Query(filter: #Predicate<Trip> { !$0.isTemplate }, sort: \Trip.createdAt) private var allTrips: [Trip]
 
     @State private var currencyCode: String
     @State private var dailyRateAmount: Double
