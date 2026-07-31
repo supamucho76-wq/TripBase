@@ -187,6 +187,7 @@ struct TripDocumentEditorView: View {
                     Image(systemName: "trash")
                         .frame(minWidth: 44, minHeight: 44)
                 }
+                .buttonStyle(.plain)
                 .accessibilityLabel("添付を削除")
             }
         } else if hasSavedAttachment {
@@ -199,12 +200,15 @@ struct TripDocumentEditorView: View {
                 Button("表示") {
                     showPreview()
                 }
+                .buttonStyle(.plain)
+                .foregroundStyle(AppTheme.accent)
                 Button(role: .destructive) {
                     removeAttachment()
                 } label: {
                     Image(systemName: "trash")
                         .frame(minWidth: 44, minHeight: 44)
                 }
+                .buttonStyle(.plain)
                 .accessibilityLabel("添付を削除")
             }
         } else {
