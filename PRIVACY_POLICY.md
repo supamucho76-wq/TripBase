@@ -56,4 +56,4 @@
 
 本アプリおよび本ポリシーに関するお問い合わせは、以下までご連絡ください。
 
-supamucho76@gmail.com
+amaneku.dev@gmail.com
