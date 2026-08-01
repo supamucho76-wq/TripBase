@@ -74,10 +74,23 @@
 
 4+(暴力・性的表現・賭博などの対象コンテンツなし)
 
-## サポートURL / マーケティングURL
+## サポートURL
 
-App Store Connectでは「サポートURL」が必須です。GitHubリポジトリのURL(`https://github.com/supamucho76-wq/TripBase`)を暫定で使うか、別途用意する場合は教えてください。
+```
+https://github.com/supamucho76-wq/TripBase
+```
 
 ## プライバシーポリシーURL
 
-`PRIVACY_POLICY.md` の内容をどこかでホスティングしてURLを発行する必要があります(App Store Connect提出に必須)。一番簡単なのはGitHub Pagesです。希望があれば設定を手伝います。
+GitHub Pagesを有効化すると、以下のURLで公開されます(`docs/index.html` は作成済み・プッシュ待ち)。
+
+```
+https://supamucho76-wq.github.io/TripBase/
+```
+
+**有効化の手順(GitHub上で数クリックだけ、こちらでは実行できません):**
+1. GitHubで `supamucho76-wq/TripBase` リポジトリを開く
+2. Settings → Pages
+3. 「Build and deployment」の Source を「Deploy from a branch」に設定
+4. Branch を `main`、フォルダを `/docs` に設定して Save
+5. 数分後、上記URLでプライバシーポリシーが表示されます

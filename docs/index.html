@@ -1,0 +1,140 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>プライバシーポリシー | 出張Base</title>
+<style>
+  :root {
+    color-scheme: light dark;
+    --bg: #f7f7f5;
+    --fg: #1c1c1e;
+    --muted: #6b6b6f;
+    --card: #ffffff;
+    --border: #e2e2e0;
+    --accent: #0d7a5f;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg: #121212;
+      --fg: #f0f0f0;
+      --muted: #a0a0a5;
+      --card: #1c1c1e;
+      --border: #2e2e30;
+      --accent: #34c99a;
+    }
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    background: var(--bg);
+    color: var(--fg);
+    font-family: -apple-system, BlinkMacSystemFont, "Hiragino Sans", "Yu Gothic", sans-serif;
+    line-height: 1.8;
+  }
+  main {
+    max-width: 720px;
+    margin: 0 auto;
+    padding: 40px 20px 80px;
+  }
+  h1 {
+    font-size: 1.6rem;
+    margin-bottom: 4px;
+  }
+  .updated {
+    color: var(--muted);
+    font-size: 0.9rem;
+    margin-bottom: 32px;
+  }
+  h2 {
+    font-size: 1.15rem;
+    margin-top: 36px;
+    margin-bottom: 12px;
+    border-left: 4px solid var(--accent);
+    padding-left: 10px;
+  }
+  p, li {
+    font-size: 0.98rem;
+  }
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 16px 0;
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    overflow: hidden;
+  }
+  th, td {
+    text-align: left;
+    padding: 10px 12px;
+    border-bottom: 1px solid var(--border);
+    font-size: 0.9rem;
+  }
+  th {
+    background: rgba(13, 122, 95, 0.08);
+  }
+  tr:last-child td { border-bottom: none; }
+  a { color: var(--accent); }
+  .footer {
+    margin-top: 48px;
+    padding-top: 20px;
+    border-top: 1px solid var(--border);
+    color: var(--muted);
+    font-size: 0.85rem;
+  }
+</style>
+</head>
+<body>
+<main>
+  <h1>プライバシーポリシー</h1>
+  <p class="updated">出張Base(TripBase) / 最終更新日: 2026年8月1日</p>
+
+  <p>出張Base(以下「本アプリ」)は、開発者(以下「当方」)が個人開発しているiOSアプリです。本ポリシーは、本アプリの利用者(以下「ユーザー」)の情報の取り扱いについて説明するものです。</p>
+
+  <h2>1. 本アプリが収集する情報</h2>
+  <p>本アプリは、ユーザーのアカウント登録を必要とせず、利用にあたって個人情報の入力を求めることはありません。</p>
+  <p>ユーザーが入力する出張の日程・宿泊先・持ち物リスト・書類・メモ・タスク・日当設定などの情報は、<strong>すべてユーザーの端末内にのみ保存され、当方を含む第三者のサーバーに送信・保存されることはありません。</strong></p>
+  <p>本アプリは、広告表示、アクセス解析(アナリティクス)、ユーザーの行動追跡(トラッキング)を一切行いません。</p>
+
+  <h2>2. 外部サービスとの通信</h2>
+  <p>本アプリは、以下の目的でインターネット通信を行いますが、いずれもユーザーを特定できる情報(氏名・メールアドレス・端末識別子など)は送信しません。</p>
+  <table>
+    <tr><th>目的</th><th>通信先</th><th>送信される情報</th></tr>
+    <tr><td>天気予報の取得</td><td>Open-Meteo (open-meteo.com)</td><td>出張先として登録した都市名</td></tr>
+    <tr><td>為替レートの取得</td><td>open.er-api.com</td><td>通貨コードのみ</td></tr>
+    <tr><td>現地の祝日情報の取得</td><td>Nager.Date (date.nager.at)</td><td>国コードと年</td></tr>
+  </table>
+  <p>これらは無料の公開APIであり、当方が管理するサーバーではありません。各サービスの通信内容については、各サービス提供元のプライバシーポリシーもあわせてご確認ください。</p>
+
+  <h2>3. 端末内に保存される情報</h2>
+  <p>以下の情報は、Appleの標準的な端末内データベース機能(SwiftData)を使い、ユーザーの端末内にのみ保存されます。</p>
+  <ul>
+    <li>出張の日程・目的地・宿泊先情報</li>
+    <li>持ち物チェックリスト</li>
+    <li>書類の登録情報(名称・番号・有効期限・メモ)、および任意で添付した画像・PDFファイル</li>
+    <li>タスク・メモ</li>
+    <li>日当計算の設定・履歴</li>
+  </ul>
+  <p>これらの情報は、ユーザーが本アプリをアンインストールするか、設定画面から「すべてのデータを削除」を実行することで削除できます。</p>
+
+  <h2>4. 通知(プッシュ通知)</h2>
+  <p>本アプリの「出発前リマインダー」機能を有効にした場合、端末のローカル通知機能を使用して通知を送信します。この通知はユーザーの端末内で処理されるものであり、外部サーバーを経由しません。通知の許可は端末の設定からいつでも変更できます。</p>
+
+  <h2>5. 写真・ファイルへのアクセス</h2>
+  <p>書類に画像やPDFを添付する場合、iOSの標準機能(フォトピッカー・ファイルピッカー)を使用します。これらの機能は本アプリのプロセス外で動作するため、本アプリが写真ライブラリ全体にアクセスすることはなく、ユーザーが選択したファイルのみが本アプリ内に保存されます。</p>
+
+  <h2>6. 第三者への情報提供</h2>
+  <p>当方は、ユーザーの情報を第三者に販売・提供することはありません。</p>
+
+  <h2>7. 本ポリシーの変更</h2>
+  <p>本ポリシーの内容は、必要に応じて予告なく変更されることがあります。重要な変更がある場合は、本アプリ内でお知らせします。</p>
+
+  <h2>8. お問い合わせ</h2>
+  <p>本アプリおよび本ポリシーに関するお問い合わせは、以下までご連絡ください。</p>
+  <p><a href="mailto:supamucho76@gmail.com">supamucho76@gmail.com</a></p>
+
+  <div class="footer">出張Base (TripBase) — 個人開発アプリ</div>
+</main>
+</body>
+</html>
