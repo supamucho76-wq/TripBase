@@ -80,17 +80,8 @@
 https://github.com/supamucho76-wq/TripBase
 ```
 
-## プライバシーポリシーURL
-
-GitHub Pagesを有効化すると、以下のURLで公開されます(`docs/index.html` は作成済み・プッシュ待ち)。
+## プライバシーポリシーURL(公開済み)
 
 ```
 https://supamucho76-wq.github.io/TripBase/
 ```
-
-**有効化の手順(GitHub上で数クリックだけ、こちらでは実行できません):**
-1. GitHubで `supamucho76-wq/TripBase` リポジトリを開く
-2. Settings → Pages
-3. 「Build and deployment」の Source を「Deploy from a branch」に設定
-4. Branch を `main`、フォルダを `/docs` に設定して Save
-5. 数分後、上記URLでプライバシーポリシーが表示されます
